@@ -1,0 +1,61 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>{% block title %}{% endblock %}Open Standards Lab</title>
+
+
+    <!-- Style -->
+    <link rel="stylesheet" href="{%  static 'bootstrap/css/bootstrap.min.css' %}" >
+    <link rel="stylesheet" href="{%  static 'style.css' %}">
+
+    <!-- JS-->
+    <script src="{% static 'jquery/js/jquery-3.5.1.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/boostrap.min.js' %}"></script>
+
+    {% if debug %}
+    <script src="{% static 'vue/js/vue.js' %}"></script>
+    {% else %}
+    <script src="{% static 'vue/js/vue.min.js' %}"></script>
+    {% endif %}
+
+  </head>
+
+  <body>
+    <div class="bg-light">
+      <nav class="navbar navbar-expand-lg navbar-light container">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+          aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link" href="{% url 'ui:home' %}">Home</a>
+            <a class="nav-link" href="{% url 'ui:about' %}">About</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+  {% block content %}
+  {% endblock %}
+
+  <footer class="p-4 mt-4 bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <p>A B C D E F</p>
+        </div>
+        <div class="col">
+          <a href="https://github.com/OpenDataServices/standards-lab/">Standards Lab on GitHub</a>
+        </div>
+      </div>
+     </div>
+  </footer>
+
+  </body>
+</html>

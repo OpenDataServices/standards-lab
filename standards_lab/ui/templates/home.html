@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Home | {% endblock %}
+{% block content %}
+
+{{request.session.get_expiry_date}}
+{{request.session.project}}
+
+{# - page - #}
+<main role="main">
+  <div id="standards-lab">
+    <project></project>
+  </div>
+</main>
+{#  end of page  #}
+
+
+{# Vue Application 'standards-lab' #}
+{% verbatim %}
+
+<script type="text/x-template" id="project">
+<div class="container">
+  <h1>Open Standards Lab<span v-if="projectName">: {{projectName}}</span></h1>
+
+  <div class="row border mb-3">
+    <div class="col">
+      <div class="form-group">
+        <label for="project-name-input">Project Name</label>
+        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="projectName" >
+      </div>
+      <div class="form-group">
+        <input type="btn" class="btn btn-primary" value="Save" v-on:click="updateProjectProperties">
+      </div>
+    </div>
+  </div>
+
+  <div v-if="projectName">
+  <div class="row border">
+
+    <div class="col">
+      <div class="form-group">
+        <label>Schema upload</label>
+        <input type="file" class="form-control-file">
+      </div>
+      <div class="form-group">
+        <label>Paste</label>
+        <textarea class="form-control"></textarea>
+      </div>
+    </div>
+
+    <div class="col">
+        <div class="form-group">
+          <label>Data upload</label>
+          <input type="file" class="form-control-file">
+        </div>
+      <div class="form-group">
+        <label>Paste</label>
+        <textarea class="form-control"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="container">
+      <div class="form-group">
+        <button class="btn btn-primary">Test the data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</script>
+{% endverbatim %}
+
+<script>
+  var projectApiUrl = "{% url 'api:project' %}";
+  var csrfmiddlewaretoken_value = "{{ csrf_token }}";
+  var sessionProject = undefined;
+
+  {% if request.session.project %}
+  sessionProject = {{request.session.project|safe}};
+  {% endif %}
+</script>
+
+<script>
+  Vue.component('project', {
+    template: '#project',
+
+    data: function(){
+      return {
+        projectName: undefined,
+      }
+    },
+
+    created: function(){
+      if (sessionProject){
+        console.log(sessionProject);
+        this.projectName = sessionProject.name;
+      }
+    },
+
+    methods: {
+      updateProjectProperties: function(){
+
+        fetch(projectApiUrl + this.projectName, {
+          method:'POST',
+          credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
+          body: JSON.stringify({ "name": this.projectName }),
+        });
+      },
+    }
+
+  });
+
+  new Vue({ el : "#standards-lab"});
+</script>
+
+
+{% endblock %}
+
