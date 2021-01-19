@@ -35,11 +35,13 @@ INSTALLED_APPS = [
     "api",
     "ui",
     "processor",
+    # 3d party:
+    "django_rq",
     # Django stuff:
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
+    #   "django.contrib.admin",
+    #  "django.contrib.auth",
+    #   "django.contrib.contenttypes",
+    #    "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
@@ -49,7 +51,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    #    "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -65,7 +67,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
+                #                "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
         },
@@ -124,6 +126,32 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-INTERNAL_IPS = (
-    '127.0.0.1',
-)
+INTERNAL_IPS = ("127.0.0.1",)
+
+REDIS_HOST = "localhost"
+REDIS_PORT = "6379"
+
+# Redis Session backend
+# https://github.com/martinrusev/django-redis-sessions
+
+SESSION_ENGINE = "redis_sessions.session"
+
+SESSION_REDIS = {
+    "host": REDIS_HOST,
+    "port": REDIS_PORT,
+    "db": 0,
+    "prefix": "session",
+    "socket_timeout": 1,
+    "retry_on_timeout": False,
+}
+
+# RQ redis connection settings
+# https://github.com/rq/django-rq/blob/master/README.rst
+
+RQ_QUEUES = {
+    "default": {
+        "HOST": REDIS_HOST,
+        "PORT": REDIS_PORT,
+        "DB": 0,
+    },
+}
