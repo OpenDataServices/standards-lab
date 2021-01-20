@@ -17,6 +17,6 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path("", include("ui.urls", namespace="ui"), name="ui"),
+#    path("", include("ui.urls", namespace="ui"), name="ui"),
     #    path("admin/", admin.site.urls),
 ]
