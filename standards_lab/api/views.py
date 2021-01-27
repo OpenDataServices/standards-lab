@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.conf import settings
 
 import json
+import os
 
 
 def OK():
@@ -36,6 +37,28 @@ class ProjectStatus(View):
         print(request.body)
         project = json.loads(request.body)
 
+        if not project.get("path"):
+            path = os.path.join(settings.ROOT_PROJECTS_DIR, project['name'])
+            os.makedirs(path)
+            project["path"] = path
+
+            with open(os.path.join(path, "settings.json"), "w") as f:
+                json.dump(project, f)
+
         request.session["project"] = project
 
         return OK()
+
+
+class ProjectUploadFile(View):
+    @edit_mode
+    def post(self, request, *args, **kwargs):
+        if not request.session.get("project") or not request.session.get("path"):
+            return FAILED("No project started")
+
+        project = request.session.project
+
+        def handle_uploaded_file(f):
+            with open(os.join(project["path"], f), 'wb+') as destination:
+                for chunk in f.chunks():
+                    destination.write(chunk)

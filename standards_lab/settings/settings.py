@@ -157,3 +157,5 @@ RQ_QUEUES = {
 }
 
 EDIT_MODE = True
+
+ROOT_PROJECTS_DIR = "/tmp/standards-lab/"
