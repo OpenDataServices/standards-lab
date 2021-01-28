@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Home | {% endblock %}
+{% block content %}
+
+{# - page - #}
+<main role="main">
+  <div id="standards-lab">
+    <project></project>
+  </div>
+</main>
+{#  end of page  #}
+
+
+{# Vue Application 'standards-lab' #}
+{% verbatim %}
+
+<script type="text/x-template" id="project">
+<div class="container">
+  <h1>Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
+
+  <div class="row border mb-3">
+    <div class="col">
+      <div class="form-group">
+        <label for="project-name-input">Project Name</label>
+        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name" >
+      </div>
+      <div class="form-group">
+        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" checked="checked">
+        <label for="project-editable">Editable by anyone with the link</label>
+      </div>
+      <div class="form-group">
+        <input type="btn" class="btn btn-primary" value="Save" v-on:click="updateProjectProperties">
+      </div>
+    </div>
+  </div>
+
+  <div v-if="project.name">
+    <div class="row border mb-3">
+
+      <div class="col">
+        <div class="form-group">
+          <label>Schema upload</label>
+          <input type="file" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
+          <div v-show="spinner == 'schema'" class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Paste</label>
+          <textarea class="form-control"></textarea>
+        </div>
+        <ul>
+          <li v-for="file in project.schemaFiles">{{file}}</li>
+        </ul>
+
+      </div>
+
+      <div class="col">
+          <div class="form-group">
+            <label>Data upload</label>
+            <input type="file" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
+            <div v-show="spinner == 'data'" class="spinner-border" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        <div class="form-group">
+          <label>Paste</label>
+          <textarea class="form-control"></textarea>
+        </div>
+        <ul>
+          <li v-for="file in project.dataFiles">{{file}}</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+    <div class="row border">
+      <div class="col">
+          <button class="btn btn-primary mt-2 mb-2">Test the data</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</script>
+{% endverbatim %}
+
+<script>
+  var projectApiUrl = "{% url 'api:project' %}";
+  var csrfmiddlewaretoken_value = "{{ csrf_token }}";
+  var initialProject = undefined;
+
+  initialProject = {{project|safe}};
+</script>
+
+<script>
+  Vue.component('project', {
+    template: '#project',
+
+    data: function(){
+      return {
+        project: { name: undefined, schemaFiles:undefined, dataFiles: undefined  },
+        spinner: undefined,
+      }
+    },
+
+    created: function(){
+      this.project = initialProject;
+    },
+
+    methods: {
+      /* Update any of the project's properties */
+      updateProjectProperties: function(){
+
+        if (window.location.href.indexOf(this.project.name) === -1){
+          const url = new URL(window.location);
+          window.history.pushState({}, this.project.name, url.origin + '/p/' + this.project.name);
+        }
+
+        fetch(projectApiUrl + this.project.name, {
+          method:'POST',
+          credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
+          body: JSON.stringify({ "name": this.project.name }),
+        });
+      },
+
+      /* Upload data to the project */
+      uploadProjectData: function(e){
+        let ctx = this;
+        let fd = new FormData();
+        let file = e.srcElement.files[0];
+        let uploadType = e.srcElement.dataset.uploadType;
+
+        this.spinner = uploadType;
+
+        fd.append("file", file);
+        fd.append("uploadType", uploadType);
+
+        fetch(projectApiUrl + this.project.name + '/upload', {
+          method:'POST',
+          credentials: 'same-origin',
+          headers: {
+            'X-CSRFToken': csrfmiddlewaretoken_value,
+          },
+          body: fd,
+        }).then(response => response.json()).then(data => {
+          ctx.spinner = undefined;
+          ctx.project = data;
+        });
+
+      },
+    }
+
+  });
+
+  new Vue({ el : "#standards-lab"});
+</script>
+
+
+{% endblock %}
+
