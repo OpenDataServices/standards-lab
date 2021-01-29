@@ -7,5 +7,10 @@ app_name = ApiConfig.name
 
 urlpatterns = [
     path("project/", views.ProjectStatus.as_view(), name="project"),
-    path("project/<str:id>", views.ProjectStatus.as_view(), name="project-details"),
+    path("project/<slug:name>", views.ProjectStatus.as_view(), name="project-details"),
+    path(
+        "project/<slug:name>/upload",
+        views.ProjectUploadFile.as_view(),
+        name="project-upload",
+    ),
 ]
