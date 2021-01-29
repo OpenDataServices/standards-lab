@@ -1,7 +1,6 @@
 # Open Standards Lab
 Open Standards Lab. A web tool for users and creators of Open Standards.
 
-
 # Setting up and running Open Standards Lab
 
 ## Developing standards-lab code
@@ -34,7 +33,20 @@ $ manage.py runserver
 
 ### Local using docker containers
 
-TODO
+Install Docker and Docker Compose.
+
+Then
+
+```
+docker-compose build
+docker-compose up
+```
+
+#### Updating requirements
+
+```
+docker run --rm -v $(pwd):/code standards-lab_standards-lab pip-compile
+```
 
 ### Python
 - Before committing python code make sure to run python-black via `$ black`

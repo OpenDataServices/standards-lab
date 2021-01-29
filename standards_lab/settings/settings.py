@@ -11,6 +11,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import environ
+
+env = environ.Env(
+    REDIS_HOST=(str, "localhost"),
+    REDIS_PORT=(str, "6379"),
+)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -122,8 +129,8 @@ STATIC_URL = "/static/"
 
 INTERNAL_IPS = ("127.0.0.1",)
 
-REDIS_HOST = "localhost"
-REDIS_PORT = "6379"
+REDIS_HOST = env("REDIS_HOST")
+REDIS_PORT = env("REDIS_PORT")
 
 # Redis Session backend
 # https://github.com/martinrusev/django-redis-sessions
