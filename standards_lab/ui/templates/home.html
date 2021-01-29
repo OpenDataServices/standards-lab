@@ -17,10 +17,11 @@
 
   <div class="form-group">
     <label for="new-project" class="mr-3">Project name</label>
-    <input type="text" id="new-project" placeholder="project name" required>
-    <div class="input-group-append">
-      <button class="btn btn-primary" onclick='window.location.href="{% url "ui:project" "__new__" %}?new=true".replace("__new__", $("#new-project").val())'>Create</button>
-    </div>
+    <input type="text" id="new-project" class="form-control" placeholder="project name" required>
+    <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
+  </div>
+  <div class="form-group">
+    <button class="btn btn-primary" onclick='window.location.href="{% url "ui:project" "__new__" %}?new=true".replace("__new__", $("#new-project").val())'>Create</button>
   </div>
 
 </div>
