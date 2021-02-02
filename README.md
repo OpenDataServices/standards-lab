@@ -46,6 +46,7 @@ docker-compose up
 
 ```
 docker run --rm -v $(pwd):/code standards-lab_standards-lab pip-compile
+docker-compose run --rm -v $(pwd):/code standards-lab pip-compile --upgrade requirements_dev.in
 ```
 
 ### Python

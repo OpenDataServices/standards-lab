@@ -1,8 +1,8 @@
 FROM python:3.9.1-buster
 RUN mkdir /code
 WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+COPY requirements_dev.txt /code/
+RUN pip install -r requirements_dev.txt
 COPY . /code/
 CMD sh -c ' \
     mkdir /tmp/standards-lab/ && \
