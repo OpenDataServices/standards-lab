@@ -10,7 +10,6 @@
 </main>
 {#  end of page  #}
 
-
 {# Vue Application 'standards-lab' #}
 {% verbatim %}
 
@@ -20,16 +19,18 @@
 
   <div class="row border mb-3">
     <div class="col">
+      <p>Own this project: {{ownThisProject}}</p>
       <div class="form-group">
         <label for="project-name-input">Project Name</label>
-        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name" >
+        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name"  >
+        <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
       </div>
-      <div class="form-group">
-        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" checked="checked">
+      <div class="form-group" v-if="ownThisProject">
+        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" >
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
-        <input type="btn" class="btn btn-primary" value="Save" v-on:click="updateProjectProperties">
+        <button class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
       </div>
     </div>
   </div>
@@ -85,11 +86,15 @@
 </div>
 </script>
 {% endverbatim %}
-
 <script>
-  var projectApiUrl = "{% url 'api:project' %}";
+  var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
   var csrfmiddlewaretoken_value = "{{ csrf_token }}";
   var initialProject = undefined;
+  var ownThisProject = false;
+
+  {% if view.kwargs.project_name in request.session.projects_owned %}
+  ownThisProject = true;
+  {% endif %}
 
   initialProject = {{project|safe}};
 </script>
@@ -102,27 +107,50 @@
       return {
         project: { name: undefined, schemaFiles:undefined, dataFiles: undefined  },
         spinner: undefined,
+        saveLabel: "Save",
       }
     },
 
     created: function(){
-      this.project = initialProject;
+      this.project = Object.assign({}, initialProject);
+      this.ownThisProject = ownThisProject;
+    },
+
+    watch: {
+      "project.name": function(){
+        console.log(this.project.name);
+        if (this.project.name != initialProject.name){
+          this.saveLabel = "Save New Version";
+        } else {
+          this.saveLabel = "Save";
+        }
+      },
+
     },
 
     methods: {
       /* Update any of the project's properties */
       updateProjectProperties: function(){
 
-        if (window.location.href.indexOf(this.project.name) === -1){
-          const url = new URL(window.location);
-          window.history.pushState({}, this.project.name, url.origin + '/p/' + this.project.name);
-        }
+        console.log(this.project);
 
-        fetch(projectApiUrl + this.project.name, {
+        fetch(projectApiUrl, {
           method:'POST',
           credentials: 'same-origin',
           headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
-          body: JSON.stringify({ "name": this.project.name }),
+          body: JSON.stringify(this.project),
+        }).then(response => response.json()).then(result => {
+          if (result.error == undefined){
+            this.project = result;
+
+            /* If we have changed project name for simplicity we reload the page to the new project page */
+            if (window.location.href.indexOf(this.project.name) === -1){
+              const url = new URL(window.location);
+              window.location.href = url.origin + '/p/' + this.project.name;
+            }
+          } else {
+            alert(result.error);
+          }
         });
       },
 
@@ -138,16 +166,20 @@
         fd.append("file", file);
         fd.append("uploadType", uploadType);
 
-        fetch(projectApiUrl + this.project.name + '/upload', {
+        fetch(projectApiUrl + '/upload', {
           method:'POST',
           credentials: 'same-origin',
           headers: {
             'X-CSRFToken': csrfmiddlewaretoken_value,
           },
           body: fd,
-        }).then(response => response.json()).then(data => {
-          ctx.spinner = undefined;
-          ctx.project = data;
+        }).then(response => response.json()).then(result => {
+          if (result.error == undefined){
+            this.project = result;
+            this.spinner = undefined;
+          } else {
+            alert(result.error)
+          }
         });
 
       },
