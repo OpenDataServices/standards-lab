@@ -23,6 +23,12 @@
     <script src="{% static 'vue/js/vue.min.js' %}"></script>
     {% endif %}
 
+    <script>
+      var global = {
+        projectRegex : /^[-\w]+$/,
+        editMode : {% if EDIT_MODE %}true{% else %}false{% endif %},
+      }
+    </script>
   </head>
 
   <body>

@@ -4,16 +4,27 @@
 <div class="container mt-2">
   <h1>Welcome to Open Standards Lab</h1>
 
-  <p>Select from available projects or create a new project</p>
+  <p>Open Standards Lab allows you to develop standards and improve the quality of Open Data.
+     Please see the <a href="{% url "ui:about" %}">About</a> pages and <a href="#TODO">Documentation</a>
+     for more information.</p>
+  <p>Select from available projects {% if EDIT_MODE %}or create a new project{% endif %}.</p>
 
-  <h2>Available Projects</h2>
-  <ul>
-    {% for project in projects %}
-    <li><a href="{% url "ui:project" project %}">{{project}}</a></li>
-    {% endfor %}
-  </ul>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Available Projects</h5>
+      <ul>
+        {% for project in projects %}
+        <li><a href="{% url "ui:project" project %}">{{project}}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 
-  <h2>Create new project</h2>
+  {% if EDIT_MODE %}
+  <div class="card">
+    <div class="card-body">
+
+    <h5 class="card-title">Create new project</h5>
 
   <div class="form-group">
     <label for="new-project" class="mr-3">Project name</label>
@@ -21,8 +32,34 @@
     <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
   </div>
   <div class="form-group">
-    <button class="btn btn-primary" onclick='window.location.href="{% url "ui:project" "__new__" %}?new=true".replace("__new__", $("#new-project").val())'>Create</button>
+    <a class="btn btn-primary card-link disabled" id="launch-new-project-link" href="#" data-base-url="{% url "ui:project" "__new__" %}?new=true" disabled="disabled">Create</a>
   </div>
 
+  </div>
+    </div>
 </div>
+
+<script>
+  $(document).ready(function(){
+    let projectLink = $("#launch-new-project-link");
+
+    $("#new-project").on("keyup", function(e){
+
+      if ($(this).val() && global.projectRegex.test($(this).val())){
+        projectLink.removeClass("disabled");
+        projectLink.prop({
+          disabled: false,
+          href: projectLink.data("base-url").replace("__new__", $(this).val()),
+        });
+      } else {
+        projectLink.addClass("disabled").prop({
+          href: "#",
+          disabled: true
+        });
+      }
+    });
+
+  });
+</script>
+{% endif %}
 {% endblock %}
