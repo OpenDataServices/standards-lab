@@ -1,6 +1,7 @@
 from django.views import View
 from django.http import JsonResponse
 from django.conf import settings
+from django.utils import timezone
 
 from utils.project import get_project_config
 
@@ -21,6 +22,8 @@ def FAILED(error):
 
 def save_project(project):
     """ Save the current project to the settings file """
+
+    project["modified"] = timezone.now().isoformat(timespec="minutes")
 
     with open(os.path.join(project["path"], "settings.json"), "w") as f:
         json.dump(project, f)
