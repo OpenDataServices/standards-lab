@@ -25,13 +25,14 @@
         <label for="project-name-input">Project Name</label>
         <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name"  >
         <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
+        <p v-if="!validProjectName" class="alert alert-warning mt-2">Invalid characters in project name</p>
       </div>
       <div class="form-group" v-if="ownThisProject">
         <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" >
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
-        <button class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
+        <button v-bind:disabled="!validProjectName" class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
       </div>
     </div>
   </div>
@@ -119,7 +120,6 @@
 
     watch: {
       "project.name": function(){
-        console.log(this.project.name);
         if (this.project.name != initialProject.name){
           this.saveLabel = "Save New Version";
         } else {
@@ -127,6 +127,12 @@
         }
       },
 
+    },
+
+    computed: {
+      validProjectName(){
+        return global.projectRegex.test(this.project.name);
+      }
     },
 
     methods: {
