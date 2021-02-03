@@ -19,7 +19,8 @@
 
   <div class="row border mb-3">
     <div class="col">
-      <p>Own this project: {{ownThisProject}}</p>
+      <p>Owner: <code>{{ownThisProject}}</code></p>
+      <p>Modified: <code>{{project.modified}}</code></p>
       <div class="form-group">
         <label for="project-name-input">Project Name</label>
         <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name"  >
