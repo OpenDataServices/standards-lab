@@ -70,6 +70,7 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.messages.context_processors.messages",
+                "ui.context_processor.common",
             ],
         },
     },
