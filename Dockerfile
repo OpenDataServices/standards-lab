@@ -5,7 +5,6 @@ COPY requirements_dev.txt /code/
 RUN pip install -r requirements_dev.txt
 COPY . /code/
 CMD sh -c ' \
-    mkdir /tmp/standards-lab/ && \
     cd standards_lab && \
     python manage.py runserver 0.0.0.0:8001 \
     '

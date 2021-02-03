@@ -9,6 +9,11 @@ services:
     environment:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
+      ROOT_PROJECTS_DIR: /code/projects_dir/
+    volumes:
+      - "./projects_dir:/projects_dir"
+      # Move this into a dev options compose file
+      - "./:/code"
 
   redis:
     image: redis:6.0.10
