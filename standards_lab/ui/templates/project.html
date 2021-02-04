@@ -1,11 +1,16 @@
 {% extends "base.html" %}
 {% block title %}Home | {% endblock %}
 {% block content %}
+{% load static %}
+<script src="{% static 'v-jsoneditor/js/v-jsoneditor.min.js' %}"></script>
+<script src="{% static 'highlightjs/js/highlight.pack.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'highlightjs/css/default.css' %}">
 
 {# - page - #}
 <main role="main">
   <div id="standards-lab">
-    <project></project>
+    <project ref="app"></project>
   </div>
 </main>
 {#  end of page  #}
@@ -13,14 +18,16 @@
 {# Vue Application 'standards-lab' #}
 {% verbatim %}
 
+
 <script type="text/x-template" id="project">
 <div class="container">
-  <h1>Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
+  <h1 class="text-right m-2">Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
 
-  <div class="row border mb-3">
-    <div class="col">
-      <p>Owner: <code>{{ownThisProject}}</code></p>
-      <p>Modified: <code>{{project.modified}}</code></p>
+  <div class="card mb-2">
+    <div class="card-body">
+      <h4 class="card-title">Project Settings</h4>
+      <p>Owner: <code>{{ownThisProject}}</code><br />
+      Modified: <code>{{project.modified}}</code></p>
       <div class="form-group">
         <label for="project-name-input">Project Name</label>
         <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name"  >
@@ -37,28 +44,40 @@
     </div>
   </div>
 
-  <div v-if="project.name">
-    <div class="row border mb-3">
+  <div class="card mb-2" v-bind:class="{ maximise: maximiseEditor }">
+    <button v-on:click="maximiseEditor = !maximiseEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
+      <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
+    </button>
+    <div class="card-body">
+      <h4 class="card-title">Schema</h4>
 
-      <div class="col">
-        <div class="form-group">
-          <label>Schema upload</label>
-          <input type="file" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
-          <div v-show="spinner == 'schema'" class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
+      <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <label>Schema upload</label>
+            <input type="file" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
+              <div v-show="spinner == 'schema'" class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="form-group">
-          <label>Paste</label>
-          <textarea class="form-control"></textarea>
-        </div>
-        <ul>
-          <li v-for="file in project.schemaFiles">{{file}}</li>
-        </ul>
 
+        <div class="col">
+          Current schema files:
+          <a class="badge badge-pill badge-primary ml-1" v-for="file in project.schemaFiles" href="#" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file)" >{{file}}</a>
+        </div>
       </div>
 
-      <div class="col">
+      <label>File Open: <input type="text" v-model="jsonEditorSchemaFileName" /></label>
+      <v-jsoneditor ref="schemaEditor" v-model="jsonEditorSchema" :options="{ 'modes': [ 'tree', 'view', 'form', 'code', 'text', 'preview' ]}"  :plus="false" class="border"></v-jsoneditor>
+      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorSchema, jsonEditorSchemaFileName)">Save</button>
+
+    </div>
+  </div>
+
+  <div class="card mb-2">
+      <div class="card-body">
+        <h4 class="card-title">Data</h4>
           <div class="form-group">
             <label>Data upload</label>
             <input type="file" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
@@ -74,20 +93,17 @@
           <li v-for="file in project.dataFiles">{{file}}</li>
         </ul>
 
-      </div>
-
-    </div>
-
-    <div class="row border">
-      <div class="col">
           <button class="btn btn-primary mt-2 mb-2">Test the data</button>
       </div>
+
     </div>
+
   </div>
 
 </div>
 </script>
 {% endverbatim %}
+
 <script>
   var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
   var csrfmiddlewaretoken_value = "{{ csrf_token }}";
@@ -101,20 +117,30 @@
   initialProject = {{project|safe}};
 </script>
 
+{% verbatim %}
 <script>
   Vue.component('project', {
     template: '#project',
 
     data: function(){
       return {
-        project: { name: undefined, schemaFiles:undefined, dataFiles: undefined  },
+        project: {
+          name: undefined,
+          schemaFiles: undefined,
+          dataFiles: undefined,
+        },
         spinner: undefined,
         saveLabel: "Save",
+        jsonEditorSchema: {},
+        jsonEditorSchemaFileName: "schema.json",
+        maximiseEditor: false,
       }
     },
 
     created: function(){
+      /* Make a copy of the initialProject object */
       this.project = Object.assign({}, initialProject);
+
       this.ownThisProject = ownThisProject;
     },
 
@@ -132,7 +158,7 @@
     computed: {
       validProjectName(){
         return global.projectRegex.test(this.project.name);
-      }
+      },
     },
 
     methods: {
@@ -162,15 +188,18 @@
       },
 
       /* Upload data to the project */
-      uploadProjectData: function(e){
-        let ctx = this;
+      uploadProjectData: function(e, fileName){
         let fd = new FormData();
         let file = e.srcElement.files[0];
         let uploadType = e.srcElement.dataset.uploadType;
 
         this.spinner = uploadType;
 
-        fd.append("file", file);
+        if (fileName === undefined){
+         fileName = file.name;
+        }
+
+        fd.append("file", file, fileName);
         fd.append("uploadType", uploadType);
 
         fetch(projectApiUrl + '/upload', {
@@ -190,13 +219,41 @@
         });
 
       },
+
+      uploadUpdatedProjectData: function(inData, fileName){
+        let data = new Blob([JSON.stringify(inData, null, 2)], { type: "application/json"});
+
+        let fakeEvent = {
+          srcElement: {
+            files: [ data ],
+            dataset: { uploadType: "schema"}}
+        };
+
+        this.uploadProjectData(fakeEvent, fileName);
+      },
+
+      downloadFile: function(fileName){
+        console.log(fileName);
+
+        fetch(projectApiUrl + '/download/' + fileName).then(response => response.json()).then(result => {
+          this.jsonEditorSchemaFileName = fileName;
+          this.jsonEditorSchema = result;
+        });
+      },
+
     }
 
   });
 
-  new Vue({ el : "#standards-lab"});
-</script>
+  /* VJsoneditor MIT License
+     https://github.com/josdejong/jsoneditor/
+     https://github.com/yansenlei/VJsoneditor
+   */
+  Vue.use(VJsoneditor);
 
+  let projectApp = new Vue({ el : "#standards-lab"});
+</script>
+{% endverbatim %}
 
 {% endblock %}
 
