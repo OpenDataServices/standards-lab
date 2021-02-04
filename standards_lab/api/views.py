@@ -119,16 +119,11 @@ class ProjectProcessStart(View):
     def get(self, request, *args, **kwargs):
         project = get_project_config(kwargs["name"])
 
-        try:
-            processor.cove.process_start_cove(project)
-        except processor.cove.UnfinishedJobExistsError as e:
-            return FAILED(str(e))
-
-        return OK(project)
+        return OK(processor.cove.process_start_cove(project))
 
 
 class ProjectProcessMonitor(View):
     def get(self, request, *args, **kwargs):
         project = get_project_config(kwargs["name"])
 
-        return OK({"status": processor.cove.process_monitor_cove(project)})
+        return OK(processor.cove.process_monitor_cove(project))
