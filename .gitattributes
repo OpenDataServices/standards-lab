@@ -1,0 +1,4 @@
+# Mark the minified files as binary so we don't git grep them
+*min.js binary
+*.map binary
+*min.css binary
