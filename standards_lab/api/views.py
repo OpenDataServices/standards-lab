@@ -123,7 +123,9 @@ class ProjectUploadFile(View):
         if not project.get(upload_type_key):
             project[upload_type_key] = []
 
-        project[upload_type_key].append(request.FILES["file"].name)
+        # if same file is uploaded we are replacing it so don't append
+        if request.FILES["file"].name not in project[upload_type_key]:
+            project[upload_type_key].append(request.FILES["file"].name)
 
         save_project(project)
 
