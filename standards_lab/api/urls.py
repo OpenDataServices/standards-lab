@@ -12,4 +12,9 @@ urlpatterns = [
         views.ProjectUploadFile.as_view(),
         name="project-upload",
     ),
+    path(
+        "project/<slug:name>/download/<str:file_name>",
+        views.ProjectDownloadFile.as_view(),
+        name="project-download",
+    ),
 ]

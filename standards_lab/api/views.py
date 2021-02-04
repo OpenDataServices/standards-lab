@@ -1,5 +1,5 @@
 from django.views import View
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from django.utils import timezone
 
@@ -85,6 +85,17 @@ class ProjectConfig(View):
         return OK(project)
 
 
+class ProjectDownloadFile(View):
+    def get(self, request, *args, **kwargs):
+        if ".json" not in kwargs["file_name"]:
+            raise Exception("Non-json files are not currently supported")
+
+        project = get_project_config(kwargs["name"])
+        file_path = os.path.join(project["path"], kwargs["file_name"])
+
+        return HttpResponse(open(file_path, "r"), content_type="application/json")
+
+
 class ProjectUploadFile(View):
     def post(self, request, *args, **kwargs):
         project = get_project_config(kwargs["name"])
@@ -95,7 +106,8 @@ class ProjectUploadFile(View):
         if upload_type_key not in ["schemaFiles", "dataFiles"]:
             return FAILED("Unknown upload type")
 
-        # We don't want to change schema if not in edit mode
+        # We don't want to change schema if not in global edit mode
+        # TODO or if (this project has edit disabled and we're not the owner)
         if not settings.EDIT_MODE and upload_type_key == "schema":
             return FAILED("Sorry - not in edit mode")
 
