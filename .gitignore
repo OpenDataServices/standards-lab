@@ -132,3 +132,4 @@ dmypy.json
 # Editor temporary files
 *.swp
 *~
+node_modules
