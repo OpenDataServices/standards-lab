@@ -1,5 +1,5 @@
 from django.views import View
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404, StreamingHttpResponse
 from django.conf import settings
 from django.utils import timezone
 
@@ -7,7 +7,9 @@ from utils.project import get_project_config
 
 import json
 import os
+import magic
 import shutil
+import io
 
 import processor.cove
 
@@ -29,6 +31,22 @@ def save_project(project):
         json.dump(project, f)
 
 
+class BadMimeTypeException(Exception):
+    pass
+
+
+def check_allowed_project_mime_type(file_path):
+    """Raises an exception if the mime of file_path is not in the
+    settings ALLOWED_PROJECT_MIME_TYPES otherwise returns the mime type"""
+    mime = magic.from_file(file_path, mime=True)
+    print("Mime being sent back is %s" % mime)
+
+    if not mime in settings.ALLOWED_PROJECT_MIME_TYPES:
+        raise BadMimeTypeException
+
+    return mime
+
+
 def edit_mode(func):
     def inner(self, request, *args, **kwargs):
         if settings.EDIT_MODE:
@@ -46,7 +64,7 @@ class ProjectConfig(View):
         try:
             return OK(get_project_config(kwargs["name"]))
         except FileNotFoundError:
-            return FAILED("No such project")
+            raise Http404
 
     @edit_mode
     def post(self, request, *args, **kwargs):
@@ -89,13 +107,35 @@ class ProjectConfig(View):
 
 class ProjectDownloadFile(View):
     def get(self, request, *args, **kwargs):
-        if ".json" not in kwargs["file_name"]:
-            raise Exception("Non-json files are not currently supported")
-
         project = get_project_config(kwargs["name"])
+
+        # Downloading is limited to files tracked in our project
+        if not kwargs["file_name"] in project.get("schemaFiles", []) + project.get(
+            "dataFiles", []
+        ):
+            raise Http404
+
         file_path = os.path.join(project["path"], kwargs["file_name"])
 
-        return HttpResponse(open(file_path, "r"), content_type="application/json")
+        mime_type = check_allowed_project_mime_type(file_path)
+
+        # ?attach is present so send this as a download to the user
+        if request.GET.get("attach"):
+            response = StreamingHttpResponse(
+                open(file_path, "rb"), content_type=mime_type
+            )
+            response[
+                "Content-Disposition"
+            ] = f"attachment; filename=\"{kwargs['file_name']}\""
+            return response
+
+        try:
+            return HttpResponse(open(file_path, "r"), content_type=mime_type)
+        except UnicodeDecodeError:
+            # This will happen if the data is in a binary format such as a zip file
+            return FAILED(
+                "Editing this file type in Standards Lab is not currently supported"
+            )
 
 
 class ProjectUploadFile(View):
@@ -113,13 +153,19 @@ class ProjectUploadFile(View):
         if not settings.EDIT_MODE and upload_type_key == "schema":
             return FAILED("Sorry - not in edit mode")
 
-        with open(
-            os.path.join(project["path"], request.FILES["file"].name), "wb+"
-        ) as destination:
-            for chunk in request.FILES["file"].chunks():
-                destination.write(chunk)
+        file_destination = os.path.join(project["path"], request.FILES["file"].name)
 
-        # Update the files list
+        with open(file_destination, "wb+") as destination_fp:
+            for chunk in request.FILES["file"].chunks():
+                destination_fp.write(chunk)
+
+        try:
+            check_allowed_project_mime_type(file_destination)
+        except BadMimeTypeException:
+            os.remove(file_destination)
+            return FAILED("Unsupported file type")
+
+        # Update the files list, this also makes the file available for the user
         if not project.get(upload_type_key):
             project[upload_type_key] = []
 

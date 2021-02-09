@@ -162,3 +162,12 @@ RQ_QUEUES = {
 EDIT_MODE = True
 
 ROOT_PROJECTS_DIR = env("ROOT_PROJECTS_DIR")
+
+# MIME types of files allowed in project
+ALLOWED_PROJECT_MIME_TYPES = [
+    "application/json",
+    "application/csv",
+    "text/plain",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.oasis.opendocument.spreadsheet",
+]

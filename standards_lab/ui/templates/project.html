@@ -3,9 +3,6 @@
 {% block content %}
 {% load static %}
 <script src="{% static 'v-jsoneditor/js/v-jsoneditor.min.js' %}"></script>
-<script src="{% static 'highlightjs/js/highlight.pack.js' %}"></script>
-
-<link rel="stylesheet" href="{% static 'highlightjs/css/default.css' %}">
 
 {# - page - #}
 <main role="main">
@@ -23,7 +20,7 @@
 <div class="container">
   <h1 class="text-right m-2">Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
 
-  <div class="card mb-2">
+  <div class="card mb-3">
     <div class="card-body">
       <h4 class="card-title">Project Settings</h4>
       <p>Owner: <code>{{ownThisProject}}</code><br />
@@ -44,59 +41,108 @@
     </div>
   </div>
 
-  <div class="card mb-2" v-bind:class="{ maximise: maximiseEditor }">
-    <button v-on:click="maximiseEditor = !maximiseEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
+  <div class="card mb-3" v-bind:class="{ maximise: maximiseSchemaEditor }">
+    <button v-on:click="maximiseSchemaEditor = !maximiseSchemaEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
       <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
     </button>
     <div class="card-body">
       <h4 class="card-title">Schema</h4>
 
       <div class="row">
+
         <div class="col">
           <div class="form-group">
             <label>Schema upload</label>
             <input type="file" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
-              <div v-show="spinner == 'schema'" class="spinner-border" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
+            <div v-show="spinner == 'schema'" class="spinner-border m-2" role="status">
+              <span class="sr-only">Loading...</span>
             </div>
           </div>
+        </div>
 
         <div class="col">
-          Current schema files:
-          <a class="badge badge-pill badge-primary ml-1" v-for="file in project.schemaFiles" href="#" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file)" >{{file}}</a>
-        </div>
+          Current data files:
+          <div class="btn-group m-1" v-for="file in project.schemaFiles">
+            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorSchema')">
+              {{file}}
+            </button>
+
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle dropdown</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + file + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
+              <!-- todo delete -->
+            </div>
+          </div>
+       </div>
+
+      </div> <!-- / row -->
+
+      <div class="form-group">
+        <label class="input-group" for="schema-open">File Open:</label>
+        <input id="schema-open" type="text" class="form-control" v-model="jsonEditorSchemaFileName" />
       </div>
 
-      <label>File Open: <input type="text" v-model="jsonEditorSchemaFileName" /></label>
-      <v-jsoneditor ref="schemaEditor" v-model="jsonEditorSchema" :options="{ 'modes': [ 'tree', 'view', 'form', 'code', 'text', 'preview' ]}"  :plus="false" class="border"></v-jsoneditor>
-      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorSchema, jsonEditorSchemaFileName)">Save</button>
+      <v-jsoneditor ref="schemaEditor" v-model="jsonEditorSchema" :options="{ 'modes': [ 'tree', 'view', 'form', 'code', 'text', 'preview' ]}"  :plus="false" class="border" height="40vh"></v-jsoneditor>
+      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorSchema, jsonEditorSchemaFileName, 'schema')">Save</button>
 
     </div>
   </div>
 
-  <div class="card mb-2">
-      <div class="card-body">
-        <h4 class="card-title">Data</h4>
+  <div class="card mb-3" v-bind:class="{ maximise: maximiseDataEditor }">
+    <button v-on:click="maximiseDataEditor = !maximiseDataEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
+      <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
+    </button>
+    <div class="card-body">
+      <h4 class="card-title">Data</h4>
+
+      <div class="row">
+
+        <div class="col">
           <div class="form-group">
             <label>Data upload</label>
             <input type="file" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
-            <div v-show="spinner == 'data'" class="spinner-border" role="status">
+            <div v-show="spinner == 'data'" class="spinner-border m-2" role="status">
               <span class="sr-only">Loading...</span>
             </div>
           </div>
-        <div class="form-group">
-          <label>Paste</label>
-          <textarea class="form-control"></textarea>
         </div>
-        <ul>
-          <li v-for="file in project.dataFiles">{{file}}</li>
-        </ul>
 
-          <button class="btn btn-primary mt-2 mb-2">Test the data</button>
+        <div class="col">
+          Current data files:
+          <div class="btn-group m-1" v-for="file in project.dataFiles">
+            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorData')">
+              {{file}}
+            </button>
+
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle dropdown</span>
+            </button>
+
+            <div class="dropdown-menu">
+              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + file + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
+              <!-- todo delete -->
+            </div>
+          </div>
+       </div>
+
+      </div> <!--/  row-->
+
+      <div class="form-group">
+        <label for="data-open">File Open:</label>
+         <input type="text" class="form-control" id="data-open" v-model="jsonEditorDataFileName" />
       </div>
 
+      <v-jsoneditor ref="dataEditor" v-if="typeof(jsonEditorData) === 'object'" v-model="jsonEditorData" :options="{ 'modes': [ 'code', 'text', 'view', 'tree' ]}"  :plus="false" class="border" height="40vh"></v-jsoneditor>
+      <textarea class="form-control" style="width:100%; min-height: 40vh" v-else v-model="jsonEditorData"></textarea>
+
+      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save</button>
+      <button class="btn btn-primary mt-2">Test the data</button>
     </div>
+
+  </div>
 
   </div>
 
@@ -131,9 +177,15 @@
         },
         spinner: undefined,
         saveLabel: "Save",
+        projectApiUrl: projectApiUrl,
+
         jsonEditorSchema: {},
         jsonEditorSchemaFileName: "schema.json",
-        maximiseEditor: false,
+        maximiseSchemaEditor: false,
+
+        jsonEditorData: {},
+        jsonEditorDataFileName: "untitled.json",
+        maximiseDataEditor: false,
       }
     },
 
@@ -212,38 +264,77 @@
         }).then(response => response.json()).then(result => {
           if (result.error == undefined){
             this.project = result;
-            this.spinner = undefined;
           } else {
             alert(result.error)
           }
+
+          e.srcElement.value = "";
+          this.spinner = undefined;
         });
 
       },
 
-      uploadUpdatedProjectData: function(inData, fileName){
-        let data = new Blob([JSON.stringify(inData, null, 2)], { type: "application/json"});
+      /* Upload data back to the project */
+      uploadUpdatedProjectData: function(inData, fileName, uploadType){
+        let data = null;
 
+        if (typeof(inData) === "object"){
+          data = new Blob([JSON.stringify(inData, null, 2)], { type: "application/json"});
+        } else {
+          /* All other data can be treated as just text */
+          data = new Blob([inData], { type: "text/plain"});
+        }
+
+        /* Re-use the file upload mechanism by creating the same event structure as used by the browser
+         * file upload mechanism */
         let fakeEvent = {
           srcElement: {
             files: [ data ],
-            dataset: { uploadType: "schema"}}
+            dataset: { uploadType: uploadType}}
         };
 
         this.uploadProjectData(fakeEvent, fileName);
       },
 
-      downloadFile: function(fileName){
+      /* destination: the widget / place to send the downloaded data */
+      downloadFile: function(fileName, destination){
         console.log(fileName);
 
-        fetch(projectApiUrl + '/download/' + fileName).then(response => response.json()).then(result => {
-          this.jsonEditorSchemaFileName = fileName;
-          this.jsonEditorSchema = result;
-        });
-      },
 
-    }
 
-  });
+        fetch(projectApiUrl + '/download/' + fileName).then(response => {
+          if (response.headers.get("content-type") == "application/json"){
+            response.json().then(result => {
+              if (result.error !== undefined){
+                alert(result.error);
+                return;
+              }
+
+              this.setEditorData(destination, result, fileName);
+
+            });
+        } else {
+          response.text().then(result => {
+            this.$refs.dataEditor.editor.aceEditor.session.setMode("ace/mode/text");
+            this.setEditorData(destination, result, fileName);
+          });
+        }
+
+      });
+    },
+
+    setEditorData: function(destination, data, fileName){
+          if (destination == "jsonEditorSchema"){
+            this.jsonEditorSchemaFileName = fileName;
+            this.jsonEditorSchema = data;
+          } else if (destination == "jsonEditorData"){
+            this.jsonEditorDataFileName = fileName;
+            this.jsonEditorData = data;
+          }
+        },
+  } /* end methods */
+
+  }); /* End application */
 
   /* VJsoneditor MIT License
      https://github.com/josdejong/jsoneditor/
