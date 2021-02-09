@@ -115,15 +115,20 @@ class ProjectUploadFile(View):
         return OK(project)
 
 
-class ProjectProcessStart(View):
+class ProjectProcess(View):
     def get(self, request, *args, **kwargs):
         project = get_project_config(kwargs["name"])
 
-        return OK(processor.cove.process_start_cove(project))
+        return OK({"cove": processor.cove.monitor(project)})
 
-
-class ProjectProcessMonitor(View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         project = get_project_config(kwargs["name"])
+        process_params = json.loads(request.body)
 
-        return OK(processor.cove.process_monitor_cove(project))
+        if process_params.get("action") == "start":
+            if process_params.get("processName") == "cove":
+                return OK(processor.cove.start(project))
+            else:
+                return FAILED("Unknown 'processName'")
+        else:
+            return FAILED("Unknown 'action'")

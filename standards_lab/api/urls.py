@@ -13,13 +13,8 @@ urlpatterns = [
         name="project-upload",
     ),
     path(
-        "project/<slug:name>/process_start",
-        views.ProjectProcessStart.as_view(),
-        name="project-process_start",
-    ),
-    path(
-        "project/<slug:name>/process_monitor",
-        views.ProjectProcessMonitor.as_view(),
-        name="project-process_monitor",
+        "project/<slug:name>/process",
+        views.ProjectProcess.as_view(),
+        name="project-process",
     ),
 ]

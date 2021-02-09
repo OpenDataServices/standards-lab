@@ -15,7 +15,7 @@ from rq.job import Job
 from rq.exceptions import NoSuchJobError
 
 
-def process_start_cove(project):
+def start(project):
     # Assume the first schema file is the root
     # Issue for this https://github.com/OpenDataServices/standards-lab/issues/21
     schema_name = project["schemaFiles"][0]
@@ -81,7 +81,7 @@ def process_start_cove(project):
     return output
 
 
-def process_monitor_cove(project):
+def monitor(project):
     output = {}
     for data_file in project["dataFiles"]:
         job_id = project["name"] + "_cove_results_" + data_file
