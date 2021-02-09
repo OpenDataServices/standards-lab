@@ -3,25 +3,32 @@
 }
 
 .jsoneditor {
-/*  border: 1px solid var(--light) !important;*/
- border: unset !important;
+  border: unset !important;
 }
 
 .jsoneditor-container {
   height: 90%;
 }
 
+.jsoneditor-text {
+  color: var(--light) !important;
+}
+
 .btn-max {
-    display: none !important;
+  display: none !important;
 }
 
 .maximise {
-    position: fixed;
-    height: 100%;
-    width: 100%;
-    z-index: 10000;
-    background: white;
-    top: 0px;
-    left: 0px;
-    overflow-y: auto;
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  z-index: 10000;
+  background: white;
+  top: 0px;
+  left: 0px;
+  overflow-y: auto;
+}
+
+.card {
+  border-top: 2px solid var(--dark);
 }
