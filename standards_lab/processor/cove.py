@@ -82,6 +82,26 @@ def start(project):
 
 
 def monitor(project):
+    """
+
+    ```
+    {
+        "cove": {
+            "1-data_file_name.json": {
+                # status message from Redis, or "nosuchjob" if the job doesn't exist at all
+                # https://python-rq.org/docs/jobs/#retrieving-a-job-from-redis
+                # Possible values are "queued", "started", "deferred", "finished", "stopped", "failed" and "nosuchjob".
+                # Different to "status" returned by other calls, which is the status of the django api call.
+                "rq_status": "finished",
+                # lib-cove's `context` output
+                "result" : {...}
+            }
+        }
+    }
+    ```
+
+    """
+
     output = {}
     for data_file in project["dataFiles"]:
         job_id = project["name"] + "_cove_results_" + data_file
