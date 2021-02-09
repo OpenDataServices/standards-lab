@@ -16,6 +16,7 @@ import environ
 env = environ.Env(
     REDIS_HOST=(str, "localhost"),
     REDIS_PORT=(str, "6379"),
+    ROOT_PROJECTS_DIR=(str, "/tmp/standards-lab/"),
 )
 
 
@@ -159,4 +160,4 @@ RQ_QUEUES = {
 
 EDIT_MODE = True
 
-ROOT_PROJECTS_DIR = "/tmp/standards-lab/"
+ROOT_PROJECTS_DIR = env("ROOT_PROJECTS_DIR")

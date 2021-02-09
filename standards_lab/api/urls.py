@@ -12,4 +12,9 @@ urlpatterns = [
         views.ProjectUploadFile.as_view(),
         name="project-upload",
     ),
+    path(
+        "project/<slug:name>/process",
+        views.ProjectProcess.as_view(),
+        name="project-process",
+    ),
 ]

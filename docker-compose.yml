@@ -2,13 +2,30 @@ version: "3.5"
 
 services:
 
-  standards-lab:
+  standards-lab-web:
     build: .
     ports:
       - "8001:8001"
     environment:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
+      ROOT_PROJECTS_DIR: /code/projects_dir/
+    volumes:
+      - "./projects_dir:/projects_dir"
+      # Move this into a dev options compose file
+      - "./:/code"
+
+  standards-lab-worker:
+    build: .
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      ROOT_PROJECTS_DIR: /code/projects_dir/
+    volumes:
+      - "./projects_dir:/projects_dir"
+      # Move this into a dev options compose file
+      - "./:/code"
+    command: "sh -c 'cd standards_lab && python manage.py rqworker default'"
 
   redis:
     image: redis:6.0.10

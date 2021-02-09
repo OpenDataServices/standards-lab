@@ -8,6 +8,8 @@ import json
 import os
 import shutil
 
+import processor.cove
+
 
 def OK(project):
     return JsonResponse(project)
@@ -111,3 +113,22 @@ class ProjectUploadFile(View):
         save_project(project)
 
         return OK(project)
+
+
+class ProjectProcess(View):
+    def get(self, request, *args, **kwargs):
+        project = get_project_config(kwargs["name"])
+
+        return OK({"cove": processor.cove.monitor(project)})
+
+    def post(self, request, *args, **kwargs):
+        project = get_project_config(kwargs["name"])
+        process_params = json.loads(request.body)
+
+        if process_params.get("action") == "start":
+            if process_params.get("processName") == "cove":
+                return OK(processor.cove.start(project))
+            else:
+                return FAILED("Unknown 'processName'")
+        else:
+            return FAILED("Unknown 'action'")
