@@ -60,6 +60,8 @@ pip-tools==5.5.0
     # via -r requirements.in
 pyrsistent==0.17.3
     # via jsonschema
+python-magic==0.4.18
+    # via -r requirements.in
 pytz==2020.5
     # via
     #   django
