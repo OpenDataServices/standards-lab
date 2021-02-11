@@ -27,7 +27,7 @@ $ docker-compose run --rm -v $(pwd):/code standards-lab-web pip-compile --upgrad
 (Re)Generate the requirements files:
 
 ```
-$ pip-compile
+$ pip-compile <selected requirements.in file>
 ```
 
 Upgrade the requirements:

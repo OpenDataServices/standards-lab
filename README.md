@@ -1,7 +1,7 @@
 # Open Standards Lab
 Open Standards Lab. A web tool for users and creators of Open Standards.
 
-# Setting up and running Open Standards Lab
+# Installing and running Open Standards Lab
 
 ## Developing standards-lab code
 Installing standards lab to develop the standards-lab code
@@ -41,3 +41,5 @@ Then
 docker-compose build
 docker-compose up
 ```
+
+[See developer docs for more information](docs/developer/)
