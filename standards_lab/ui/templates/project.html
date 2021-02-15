@@ -66,7 +66,9 @@
           <div class="btn-group m-1" v-for="file in project.schemaFiles">
             <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorSchema')">
               {{file}}
+              <small v-if="project.rootSchema == file">(root)</small>
             </button>
+
 
             <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="sr-only">Toggle dropdown</span>
@@ -74,12 +76,15 @@
 
             <div class="dropdown-menu">
               <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + file + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
+              <a v-if="ownThisProject && project.schemaFiles.length > 1 && project.rootSchema != file" class="dropdown-item" href="#" v-on:click.prevent="project.rootSchema = file; updateProjectProperties()" v-bind:title="'Set Root Schema '+file" >
+                Set as Root Schema
+              </a>
               <a v-if="ownThisProject" class="dropdown-item text-danger" href="#" v-on:click.prevent="deleteProjectData(file, 'schema')" v-bind:title="'Delete '+file" >Delete</a>
             </div>
           </div>
        </div>
 
-      </div> <!-- / row -->
+      </div> <!-- / row/ schema section -->
 
       <div class="form-group">
         <label class="input-group" for="schema-open">File Open:</label>
@@ -175,6 +180,7 @@
           name: undefined,
           schemaFiles: undefined,
           dataFiles: undefined,
+          rootSchema: undefined,
         },
         spinner: undefined,
         saveLabel: "Save",
@@ -289,7 +295,7 @@
 
       },
 
-      /* Upload data back to the project */
+      /* Upload data back to the project saving any edited files */
       uploadUpdatedProjectData: function(inData, fileName, uploadType){
         let data = null;
 
@@ -313,11 +319,9 @@
 
       /* destination: the widget / place to send the downloaded data */
       downloadFile: function(fileName, destination){
-        console.log(fileName);
-
-
 
         fetch(projectApiUrl + '/download/' + fileName).then(response => {
+          /* json data */
           if (response.headers.get("content-type") == "application/json"){
             response.json().then(result => {
               if (result.error !== undefined){
@@ -329,6 +333,7 @@
 
             });
         } else {
+          /* text/csv data */
           response.text().then(result => {
             this.$refs.dataEditor.editor.aceEditor.session.setMode("ace/mode/text");
             this.setEditorData(destination, result, fileName);

@@ -28,6 +28,7 @@ class ProjectView(TemplateView):
             )
             return context
         except FileNotFoundError:
+            # Create new project
             if self.request.GET.get("new"):
                 created_by_me, context["project"] = create_new_project(
                     self.kwargs["project_name"], json_format=True
