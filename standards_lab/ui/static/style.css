@@ -32,3 +32,7 @@
 .card {
   border-top: 2px solid var(--dark);
 }
+
+.text-danger {
+  color: #6a1b07;
+}
