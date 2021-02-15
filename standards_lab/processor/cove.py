@@ -16,9 +16,7 @@ from rq.exceptions import NoSuchJobError
 
 
 def start(project):
-    # Assume the first schema file is the root
-    # Issue for this https://github.com/OpenDataServices/standards-lab/issues/21
-    schema_name = project["schemaFiles"][0]
+    schema_name = project["rootSchema"]
 
     print(project, flush=True)
 

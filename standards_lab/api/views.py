@@ -193,9 +193,17 @@ class ProjectUploadFile(View):
         if not project.get(upload_type_key):
             project[upload_type_key] = []
 
-        # if same file is uploaded we are replacing it so don't append
+        # If the same file is uploaded we are replacing it so don't append
         if request.FILES["file"].name not in project[upload_type_key]:
             project[upload_type_key].append(request.FILES["file"].name)
+
+        # If we are uploading a schema file and we haven't got a root Schema defined
+        # Then set it as the first schema file.
+        try:
+            if upload_type_key == "schemaFiles" and not project.get("rootSchema"):
+                project["rootSchema"] = project["schemaFiles"][0]
+        except IndexError:
+            pass
 
         save_project(project)
 
