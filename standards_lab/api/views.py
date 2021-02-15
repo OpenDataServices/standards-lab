@@ -105,6 +105,29 @@ class ProjectConfig(View):
 
         return OK(project)
 
+    @edit_mode
+    def delete(self, *args, **kwargs):
+        file_info = json.loads(self.request.body)
+        project = get_project_config(kwargs["name"])
+        upload_type_key = "%sFiles" % file_info["uploadType"]
+
+        path = os.path.join(
+            settings.ROOT_PROJECTS_DIR, project["name"], file_info["fileName"]
+        )
+
+        try:
+            os.remove(path)
+            project[upload_type_key].remove(file_info["fileName"])
+
+            if project["rootSchema"] == file_info["fileName"]:
+                del project["rootSchema"]
+
+            save_project(project)
+        except (FileNotFoundError, KeyError):
+            return FAILED("File does not exist")
+
+        return OK(project)
+
 
 class ProjectDownloadFile(View):
     def get(self, request, *args, **kwargs):
