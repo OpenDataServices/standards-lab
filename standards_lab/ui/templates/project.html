@@ -145,7 +145,7 @@
       <textarea class="form-control" style="width:100%; min-height: 40vh" v-else v-model="jsonEditorData"></textarea>
 
       <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save</button>
-      <button class="btn btn-primary mt-2">Test the data</button>
+      <button class="btn btn-primary mt-2" v-on:click="startProcess('cove')">Test the data</button>
     </div>
 
   </div>
@@ -362,6 +362,25 @@
         this.jsonEditorData = data;
       }
     },
+
+    startProcess: function(processName){
+      console.log("hi");
+
+      /* Save any changes to the project first */
+      this.updateProjectProperties();
+
+      fetch(projectApiUrl + '/process', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': csrfmiddlewaretoken_value,
+        },
+        body: JSON.stringify({ action: "start", processName: processName}),
+        }).then(response => response.json()).then(result => {
+          console.log(result);
+        });
+    },
+
   } /* end methods */
 
   }); /* End application */
