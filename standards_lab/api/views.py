@@ -42,9 +42,7 @@ def check_allowed_project_mime_type(file_path):
     """Raises an exception if the mime of file_path is not in the
     settings ALLOWED_PROJECT_MIME_TYPES otherwise returns the mime type"""
     mime = magic.from_file(file_path, mime=True)
-    print("Mime being sent back is %s" % mime)
-
-    if not mime in settings.ALLOWED_PROJECT_MIME_TYPES:
+    if mime not in settings.ALLOWED_PROJECT_MIME_TYPES:
         raise BadMimeTypeException
 
     return mime
