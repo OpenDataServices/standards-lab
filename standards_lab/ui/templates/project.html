@@ -150,7 +150,8 @@
       <textarea class="form-control" style="width:100%; min-height: 40vh" v-else v-model="jsonEditorData"></textarea>
 
       <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save</button>
-      <button class="btn btn-primary mt-2">Test the data</button>
+      <button class="btn btn-primary mt-2" v-on:click="startProcess('cove')">Test the data</button>
+      <a class="btn btn-primary mt-2" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="displayResults">Results</a>
     </div>
 
   </div>
@@ -163,6 +164,8 @@
 
 <script>
   var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
+  var projectCoveResultsUrl = "{% url "ui:cove-results" view.kwargs.project_name %}";
+  var displayResults = false;
   var csrfmiddlewaretoken_value = "{{ csrf_token }}";
   var initialProject = undefined;
   var ownThisProject = false;
@@ -190,6 +193,7 @@
         spinner: undefined,
         saveLabel: "Save",
         projectApiUrl: projectApiUrl,
+        projectCoveResultsUrl: projectCoveResultsUrl,
 
         jsonEditorSchema: {},
         jsonEditorSchemaFileName: "schema.json",
@@ -391,6 +395,25 @@
         this.jsonEditorData = data;
       }
     },
+
+    startProcess: function(processName){
+
+      /* Save any changes to the project first */
+      this.updateProjectProperties();
+
+      fetch(projectApiUrl + '/process', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': csrfmiddlewaretoken_value,
+        },
+        body: JSON.stringify({ action: "start", processName: processName}),
+        }).then(response => response.json()).then(result => {
+          console.log(result);
+        });
+      this.displayResults = true;
+    },
+
   } /* end methods */
 
   }); /* End application */
