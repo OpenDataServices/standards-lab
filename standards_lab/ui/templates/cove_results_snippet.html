@@ -1,0 +1,111 @@
+{% extends 'explore.html' %}
+{% load i18n %}
+{% load cove_tags %}
+
+
+{% block header_button %}
+  <div class="row">
+    <a href="{% url 'index' %}" class="btn btn-large btn-success">{% trans 'Load New File' %}</a>
+  </div>
+{% endblock %}
+
+{% block explore_content %}
+
+<div class="container mt-2">
+    <div class="row">
+
+        {% if validation_errors %}
+              {% for error_json, values in validation_errors %}
+                {% with error=error_json|json_decode %}
+                  {% cove_modal_errors className="validation-errors-"|concat:forloop.counter modalTitle=error.message errorList=values file_type=file_type full_table=True %}
+                {% endwith %}
+              {% endfor %}
+
+
+              <a name="validation-errors" class="anchor"></a>
+              <div class="panel panel-danger">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" >
+                  <h4 class="panel-title">
+                    {% trans 'Structural Errors' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="panel-body">
+                  {% include "validation_table.html" %}
+                </div>
+              </div>
+        {% else %}
+             <div class="panel panel-success">
+                <div id="validation-panel" class="panel-heading pointer" role="region">
+                  <h4 class="panel-title">
+                    {% trans 'Structural Errors' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="panel-body">
+                    <p>{% trans 'There were no structural errors' %}.</p>
+                </div>
+              </div>
+        {% endif %}
+
+    </div>
+
+    <div class="row">
+
+        {% if additional_fields_count %}
+
+              <a name="additional-fields" class="anchor"></a>
+              <div class="panel panel-danger">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable">
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Fields' %}
+                  </h4>
+                </div>
+                <div id="additionalFieldsTable" class="panel-body">
+                  {% include "additional_fields_table_all.html" %}
+                </div>
+              </div>
+        {% else %}
+             <div class="panel panel-success">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable" >
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Fields' %}
+                  </h4>
+                </div>
+                <div id="additionalFieldsTable" class="collapse in panel-body">
+                    <p>{% trans 'There were no additional fields' %}.</p>
+                </div>
+              </div>
+        {% endif %}
+
+    </div>
+
+    {% if additional_open_codelist_values %}
+    <div class="row">
+      <a name="additional-open-codelist-values" class="anchor"></a>
+      <div class="panel panel-warning">
+        <div id="additional-open-codelist-values-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+          aria-controls="additionalOpenCodelist" data-toggle="collapse" data-target="#additionalOpenCodelist">
+          <h4 class="panel-title">
+            <span class="our-title"><span
+                class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Codelist Values' %}</span>
+          </h4>
+        </div>
+        <div class="panel-body">
+          {% trans 'Your data contains a number of fields that use an open codelist. You should use values from the codelist whenever possible, but if the codelist does not provide the values you need, you are permitted to add additional values. The values below do not appear in the codelist; you should check that you intended these as additional values.' %}
+          <div id="additionalOpenCodelist" class="in">
+            {% with additional_codelist_values=additional_open_codelist_values %}
+            {% include "additional_codelist_values.html" %}
+            {% endwith%}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock explore_content %}
+
+
+{% block bottomcontent1 %}
+{% endblock %}
+{% block bottomcontent2 %}
+{% endblock %}
