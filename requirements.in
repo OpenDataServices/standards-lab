@@ -1,7 +1,7 @@
 django==2.2.*
 libcove==0.20.2
-django-redis-sessions==0.6.2
 django-rq==2.4.0
 pip-tools
 django-environ
 python-magic==0.4.*
+django-redis==4.12.*
