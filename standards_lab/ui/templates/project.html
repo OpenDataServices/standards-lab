@@ -194,6 +194,8 @@
       this.project = Object.assign({}, initialProject);
 
       this.ownThisProject = ownThisProject;
+
+      setInterval(() => { this.getProjectProperties(); }, 2000);
     },
 
     watch: {
@@ -214,10 +216,22 @@
     },
 
     methods: {
+      /* GET the project properties */
+      getProjectProperties: function(){
+
+        fetch(projectApiUrl, {
+          method:'GET',
+          credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
+        }).then(response => response.json()).then(result => {
+          if (result.error == undefined){
+            this.project = result;
+          }
+        });
+      },
+
       /* Update any of the project's properties */
       updateProjectProperties: function(){
-
-        console.log(this.project);
 
         fetch(projectApiUrl, {
           method:'POST',
