@@ -2,6 +2,7 @@ from django.views import View
 from django.http import JsonResponse, HttpResponse, Http404, StreamingHttpResponse
 from django.conf import settings
 from django.utils import timezone
+from django.core.cache import cache
 
 from utils.project import get_project_config
 
@@ -29,6 +30,8 @@ def save_project(project):
 
     with open(os.path.join(project["path"], "settings.json"), "w") as f:
         json.dump(project, f)
+
+    cache.set(project["name"], project)
 
 
 class BadMimeTypeException(Exception):

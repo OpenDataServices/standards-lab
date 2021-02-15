@@ -1,10 +1,19 @@
 from django.conf import settings
+from django.core.cache import cache
 import os
 import json
 
 
 def get_project_config(project_name, json_format=False):
     """ Returns the specified project config, optionally in json format """
+
+    project = cache.get(project_name)
+    if project:
+        if json_format:
+            return json.dumps(project)
+
+        return project
+
     with open(
         os.path.join(settings.ROOT_PROJECTS_DIR, project_name, "settings.json")
     ) as fp:
@@ -30,6 +39,8 @@ def create_new_project(project_name, json_format=False):
         os.path.join(settings.ROOT_PROJECTS_DIR, project_name, "settings.json"), "w"
     ) as fp:
         json.dump(project, fp)
+
+    cache.set(project_name, project)
 
     if json_format:
         return True, json.dumps(project)

@@ -137,15 +137,17 @@ REDIS_PORT = env("REDIS_PORT")
 # Redis Session backend
 # https://github.com/martinrusev/django-redis-sessions
 
-SESSION_ENGINE = "redis_sessions.session"
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
 
-SESSION_REDIS = {
-    "host": REDIS_HOST,
-    "port": REDIS_PORT,
-    "db": 0,
-    "prefix": "session",
-    "socket_timeout": 1,
-    "retry_on_timeout": False,
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
 
 # RQ redis connection settings
