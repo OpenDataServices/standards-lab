@@ -55,6 +55,7 @@ def start(project):
         except NoSuchJobError:
             pass
 
+        print("opening %s" % os.path.join(project["path"], data_file))
         with open(
             os.path.join(project["path"], data_file)
         ) as fp, tempfile.TemporaryDirectory() as upload_dir:
