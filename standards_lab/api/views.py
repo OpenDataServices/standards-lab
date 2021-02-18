@@ -7,9 +7,8 @@ from utils.project import get_project_config
 
 import json
 import os
-import magic
+import mimetypes
 import shutil
-import io
 
 import processor.cove
 
@@ -38,7 +37,7 @@ class BadMimeTypeException(Exception):
 def check_allowed_project_mime_type(file_path):
     """Raises an exception if the mime of file_path is not in the
     settings ALLOWED_PROJECT_MIME_TYPES otherwise returns the mime type"""
-    mime = magic.from_file(file_path, mime=True)
+    mime = mimetypes.guess_type(file_path, strict=True)[0]
     print("Mime being sent back is %s" % mime)
 
     if not mime in settings.ALLOWED_PROJECT_MIME_TYPES:
