@@ -1,5 +1,10 @@
 django==2.2.*
 libcove==0.20.2
+<<<<<<< HEAD
+=======
+libcoveweb==0.20.0
+django-redis-sessions==0.6.2
+>>>>>>> requirements: add lib-cove-web
 django-rq==2.4.0
 pip-tools
 django-environ
