@@ -133,3 +133,4 @@ dmypy.json
 *.swp
 *~
 node_modules
+projects_dir
