@@ -53,4 +53,6 @@ docker-compose build
 docker-compose up
 ```
 
+Visit `localhost:8001` in a browser.
+
 [See developer docs for more information](docs/developer/)
