@@ -85,8 +85,7 @@ class ProjectConfig(View):
                     settings.ROOT_PROJECTS_DIR, project_update["name"]
                 )
                 shutil.copytree(project_update["path"], new_path, dirs_exist_ok=False)
-                # Delete the old path to avoid it overwriting the value later
-                # on
+                # Delete the old path to avoid it overwriting the value later on
                 del project_update["path"]
                 project["path"] = new_path
 
@@ -100,7 +99,7 @@ class ProjectConfig(View):
 
             except FileExistsError:
                 return FAILED(
-                    "Could not save project with this name as it already " "exists"
+                    "Could not save project with this name as it already exists"
                 )
             except shutil.Error:
                 return FAILED("Project creation error")
@@ -161,10 +160,9 @@ class ProjectDownloadFile(View):
         try:
             return HttpResponse(open(file_path, "r"), content_type=mime_type)
         except UnicodeDecodeError:
-            # This will happen if the data is in a binary format such as a zip
-            # file
+            # This will happen if the data is in a binary format such as a zip file
             return FAILED(
-                "Editing this file type in Standards Lab is not currently " "supported"
+                "Editing this file type in Standards Lab is not currently supported"
             )
 
 
@@ -195,8 +193,7 @@ class ProjectUploadFile(View):
             os.remove(file_destination)
             return FAILED("Unsupported file type")
 
-        # Update the files list, this also makes the file available for the
-        # user
+        # Update the files list, this also makes the file available for the user
         if not project.get(upload_type_key):
             project[upload_type_key] = []
 
@@ -204,8 +201,7 @@ class ProjectUploadFile(View):
         if request.FILES["file"].name not in project[upload_type_key]:
             project[upload_type_key].append(request.FILES["file"].name)
 
-        # If we are uploading a schema file and we haven't got a root Schema
-        # defined
+        # If we are uploading a schema file and we haven't got a root Schema defined
         # Then set it as the first schema file.
         try:
             if upload_type_key == "schemaFiles" and not project.get("rootSchema"):
