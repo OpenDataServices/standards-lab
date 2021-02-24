@@ -12,14 +12,12 @@ The python requirements are defined in `requirements.in` and `requirements_dev.i
 (Re)Generate the requirements files:
 
 ```
-$ docker run --rm -v $(pwd):/code standards-lab_standards-lab pip-compile
+$ docker run --rm -v $(pwd):/code rhiaro/pip-tools <selected requirements.in file>
 ```
 
 Upgrade the requirements:
 
-```
-$ docker-compose run --rm -v $(pwd):/code standards-lab-web pip-compile --upgrade <selected requirements.in file>
-```
+TODO
 
 
 ### Using pip-compile locally
