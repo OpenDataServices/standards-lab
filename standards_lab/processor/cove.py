@@ -1,6 +1,5 @@
 from libcove.lib.common import (
     common_checks_context,
-    get_additional_codelist_values,
     SchemaJsonMixin,
 )
 
@@ -25,7 +24,8 @@ def start(project):
     schema_obj.schema_host = os.path.join(project["path"], "")
     # These are needed for flatten-tool:
     # schema_obj.schema_name = schema_name
-    # schema_obj.schema_url = urljoin(schema_obj.schema_host, schema_obj.schema_name)
+    # schema_obj.schema_url = urljoin(schema_obj.schema_host,
+    #                                   schema_obj.schema_name)
     schema_obj.pkg_schema_name = schema_name
     schema_obj.pkg_schema_url = urljoin(
         schema_obj.schema_host, schema_obj.pkg_schema_name
@@ -43,7 +43,8 @@ def start(project):
             if status not in ["finished", "failed"]:
                 output[data_file] = {
                     "status": "FAILED",
-                    "error": f"Job exists, and status is '{status}', so not queuing a new job.",
+                    "error": f"Job exists, and status is '{status}', so not"
+                    " queuing a new job.",
                 }
                 continue
         except NoSuchJobError:
@@ -55,8 +56,9 @@ def start(project):
             # upload_dir is only used to output files to (e.g. cell source map
             # from flatten-tool, or a cache of the validation results).
             try:
-                # Possibly we should do this in the worker for performance reasons
-                # Issue: https://github.com/OpenDataServices/standards-lab/issues/24
+                # Possibly we should do this in the worker for performance
+                # reasons
+                # Issue: https://github.com/OpenDataServices/standards-lab/issues/24 # noqa
                 json_data = json.load(fp, parse_float=Decimal)
             except json.JSONDecodeError:
                 output[data_file] = {
@@ -86,10 +88,13 @@ def monitor(project):
     {
         "cove": {
             "1-data_file_name.json": {
-                # status message from Redis, or "nosuchjob" if the job doesn't exist at all
+                # status message from Redis, or "nosuchjob" if the job doesn't
+                # exist at all
                 # https://python-rq.org/docs/jobs/#retrieving-a-job-from-redis
-                # Possible values are "queued", "started", "deferred", "finished", "stopped", "failed" and "nosuchjob".
-                # Different to "status" returned by other calls, which is the status of the django api call.
+                # Possible values are "queued", "started", "deferred",
+                # "finished", "stopped", "failed" and "nosuchjob".
+                # Different to "status" returned by other calls, which is the
+                # status of the django api call.
                 "rq_status": "finished",
                 # lib-cove's `context` output
                 "result" : {...}

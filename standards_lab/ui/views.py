@@ -4,7 +4,6 @@ from utils.project import get_project_config, create_new_project
 from django.conf import settings
 
 import os
-import json
 
 
 class Home(TemplateView):
@@ -35,7 +34,8 @@ class ProjectView(TemplateView):
                 )
 
                 if created_by_me:
-                    # We created this project so add it to our session's project's owned array
+                    # We created this project so add it to our session's
+                    # project's owned array
                     try:
                         projects_owned = self.request.session["projects_owned"]
                         projects_owned.append(self.kwargs["project_name"])
