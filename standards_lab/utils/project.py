@@ -24,7 +24,10 @@ def get_project_config(project_name, json_format=False):
 
 
 def create_new_project(project_name, json_format=False):
-    """ Create new project or return config for existing project optionally in json format """
+    """
+    Create new project or return config for existing project optionally in
+    json format
+    """
 
     path = os.path.join(settings.ROOT_PROJECTS_DIR, project_name)
 
@@ -36,7 +39,8 @@ def create_new_project(project_name, json_format=False):
     project = {"name": project_name, "path": path}
 
     with open(
-        os.path.join(settings.ROOT_PROJECTS_DIR, project_name, "settings.json"), "w"
+        os.path.join(settings.ROOT_PROJECTS_DIR, project_name, "settings.json"),
+        "w",
     ) as fp:
         json.dump(project, fp)
 
