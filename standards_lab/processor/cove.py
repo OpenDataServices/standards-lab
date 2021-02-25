@@ -2,6 +2,7 @@ from libcove.lib.common import (
     common_checks_context,
     get_additional_codelist_values,
     SchemaJsonMixin,
+    validator,
 )
 
 from decimal import Decimal
@@ -13,6 +14,11 @@ import tempfile
 import django_rq
 from rq.job import Job
 from rq.exceptions import NoSuchJobError
+
+from .extra_validator_funcs import patch_validator
+
+
+patch_validator(validator)
 
 
 def start(project):
