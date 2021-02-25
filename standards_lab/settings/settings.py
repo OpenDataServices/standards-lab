@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "processor",
     # 3d party:
     "django_rq",
+    "cove",
     # Django stuff:
     "django.contrib.messages",
     "django.contrib.staticfiles",
