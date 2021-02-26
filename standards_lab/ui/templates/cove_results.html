@@ -1,15 +1,17 @@
+{% extends "base.html" %}
 {% load i18n %}
 
+{% block content %}
+  {% for file_name, item in cove.items %}
+      {{file_name}} {{item.rq_status}}
 
-{% for file_name, item in cove.items %}
-    {{file_name}} {{item.rq_status}}
+      {% with item.result.context as cove_result %}
+      {{item.result.context.validation_errors_count}}
 
-    {% with item.result.context as cove_result %}
-    {{item.result.context.validation_errors_count}}
+      {% for error_json, values in cove_result.validation_errors %}
+       <li>{{error_json}}</li>
+       {% endfor %}
 
-    {% for error_json, values in cove_result.validation_errors %}
-     <li>{{error_json}}</li>
-     {% endfor %}
-
-     {% endwith %}
-{% endfor %}
+       {% endwith %}
+  {% endfor %}
+{% endblock %}
