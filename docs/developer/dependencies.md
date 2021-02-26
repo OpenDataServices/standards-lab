@@ -17,8 +17,17 @@ $ docker run --rm -v $(pwd):/code rhiaro/pip-tools <selected requirements.in fil
 
 Upgrade the requirements:
 
-TODO
+```
+$ docker run --rm -v $(pwd):/code rhiaro/pip-tools --upgrade <selected requirements.in file>
+```
 
+To install updated dependencies (TODO: use a shared volume to make this faster):
+
+```
+$ docker-compose down
+$ docker-compose build
+$ docker-compose up
+```
 
 ### Using pip-compile locally
 
