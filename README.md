@@ -7,11 +7,11 @@ Open Standards Lab. A web tool for users and creators of Open Standards.
 Installing standards lab to develop the standards-lab code
 ### Local system
 
-Install:
+#### Install:
 
 ```
 # Install system dependencies
-$ apt install redis python3-virtualenv
+$ apt install redis python3-virtualenv # or whatever you system package manger uses
 
 # Create python virtual environment
 $ virtualenv --python python3 .ve
@@ -24,10 +24,21 @@ $ pip install -r requirements.txt
 $ pip install -r requirements_dev.txt
 ```
 
-Run development webserver:
+#### Running:
+
+Make sure redis is running:
+```
+ $ sudo service redis start
+```
+Run development webserver process:
 
 ```
 $ manage.py runserver
+```
+
+Run the queue runner process:
+```
+$ manage.py rqworker default
 ```
 
 
