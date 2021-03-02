@@ -193,6 +193,7 @@
         spinner: undefined,
         saveLabel: "Save",
         projectApiUrl: projectApiUrl,
+        projectCoveResultsUrl: projectCoveResultsUrl,
 
         jsonEditorSchema: {},
         jsonEditorSchemaFileName: "schema.json",
@@ -381,7 +382,6 @@
         headers: {
           'X-CSRFToken': csrfmiddlewaretoken_value,
         },
-<<<<<<< HEAD
         body: JSON.stringify({ fileName: fileName, uploadType: uploadType }),
       });
     },
@@ -395,7 +395,6 @@
         this.jsonEditorData = data;
       }
     },
-=======
 
     startProcess: function(processName){
       console.log("hi");
@@ -416,7 +415,6 @@
       this.displayResults = true;
     },
 
->>>>>>> WIP
   } /* end methods */
 
   }); /* End application */

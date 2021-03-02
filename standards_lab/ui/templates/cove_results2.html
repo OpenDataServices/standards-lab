@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Home |{% endblock %}
+{% block content %}
+<div class="container mt-2">
+    <h1><a href="{% url "ui:project" project.name %}">{{project.name}}</a> - Data Test Results</h1>
+    <p><a href="{% url "ui:project" project.name %}">Back to {{project.name}} project</a></p>
+    {% for cove_result_page in cove_results_pages %}
+    <h2>{{cove_result_page.file_name}}</h2>
+     {{cove_result_page.html}}
+    {% endfor %}
+</div>
+{% endblock %}
