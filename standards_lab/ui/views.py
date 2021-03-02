@@ -65,6 +65,44 @@ class CoveResults(TemplateView):
 
         context["cove"] = processor.cove.monitor(context["project"])
 
-        print(context["cove"].keys())
+        return context
+
+
+from django.template.loader import render_to_string
+
+
+class CoveResults2(TemplateView):
+    template_name = "cove_results2.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            context["project"] = get_project_config(self.kwargs["project_name"])
+        except FileNotFoundError:
+            return Http404
+
+        # Render the lib-cove-web results snippets
+        try:
+            context["cove_results_pages"] = []
+            cove = processor.cove.monitor(context["project"])
+
+            for file_result in cove:
+                snippet_context = cove[file_result]["result"]["context"]
+                snippet_context["request"] = {
+                    "current_app_base_template": "cove_results_snippet_base.html"
+                }
+
+                context["cove_results_pages"].append(
+                    {
+                        "html": render_to_string(
+                            "cove_results_snippet.html", snippet_context
+                        ),
+                        "file_name": file_result,
+                    }
+                )
+
+        except KeyError:
+            return {"results": "expired"}
 
         return context

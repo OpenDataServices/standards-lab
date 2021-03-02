@@ -1,0 +1,334 @@
+{% extends 'explore.html' %}
+{% load i18n %}
+{% load cove_tags %}
+
+
+{% block header_button %}
+  <div class="row">
+    <a href="{% url 'index' %}" class="btn btn-large btn-success">{% trans 'Load New File' %}</a>
+  </div>
+{% endblock %}
+
+{% block explore_content %}
+
+<div class="container mt-2">
+{% block key_facts %} {# Headlines area #}
+{% with releases_aggregates as ra %}
+
+  <div class="row">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h4 class="panel-title">{% trans 'Headlines' %}</h4>
+      </div>
+      <div class="panel-body">
+
+        {% if conversion_warning_messages or conversion_warning_messages_titles %}
+        <div class="conversion message"><span class="glyphicon glyphicon-flag" aria-hidden="true"></span>{% blocktrans %}Please read the <a href="#conversion-warning">conversion warnings</a> below.{% endblocktrans %}</div>
+        {% endif %}
+        <div class="validation message">
+          {% if validation_errors or additional_closed_codelist_values %}
+          <span class="glyphicon glyphicon-remove" aria-hidden="true"></span><b>{% trans "Failed " %}</b>
+          {% else %}
+          <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>{% trans "Passed " %}
+          {% endif %}
+          {% blocktrans %}structural checks against <a href="{{ schema_url }}">OC4IDS project package schema version {% endblocktrans %}{{ version_used_display }}</a>.
+          {% if validation_errors %}<br/>{% blocktrans %}See <a href="#validation-errors">Structural Errors</a> below.{% endblocktrans %}{% endif %}
+        </div>
+
+        <div class="key-facts message">
+          <strong>{% trans 'At a glance' %}</strong>
+          <ul>
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% blocktrans count count=json_data.projects|length %}This file contains <strong>{{count}} project.</strong>{% plural %}This file contains <strong>{{count}} projects.</strong>{% endblocktrans %}
+            </li>
+            {% if json_data.version %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "The schema version specified in the file is" %} <strong>{{json_data.version}}</strong>.
+            </li>
+            {% endif %}
+
+            {% if json_data.publisher %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "The publisher named in the file is" %} <strong>{{json_data.publisher.name}}</strong>.
+            </li>
+            {% endif %}
+
+            {% if json_data.license %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "The license is" %} <a href="{{json_data.license}}">{{json_data.license}}</a>.
+
+            </li>
+
+            {% if json_data.publicationPolicy %}
+            <li>
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "Publication policy is" %} <a href="{{json_data.publicationPolicy}}">{{json_data.publicationPolicy}}</a>
+            </li>
+            {% endif %}
+
+            {% endif %}
+
+            {% if ra.duplicate_release_ids %}
+            <li><span class="glyphicon glyphicon-flag" aria-hidden="true"></span>
+              {% blocktrans count count=ra.duplicate_release_ids|length %}There is {{ count }} <a href="#key-field-info">duplicate release ID</a> in this package.{% plural %}There are {{ count }} <a href="#key-field-info">duplicate release IDs</a> in this package.{% endblocktrans %}
+            </li>
+            {% endif %}
+
+            {% if data_only %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% blocktrans count count=data_only|length %}This file uses {{count}} <a href="#additional-fields">additional field</a> not used in the standard.{% plural %}This file uses {{count}} <a href="#additional-fields">additional fields</a> not used in the standard.{% endblocktrans %}
+            </li>
+            {% endif %}
+            {% if csv_encoding and csv_encoding != "utf-8-sig" %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "This file is not 'utf-8' encoded (it is" %} <strong>{{csv_encoding}}</strong> {% trans "encoded)." %}
+            </li>
+            {% endif %}
+            <li><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              {% trans "Data " %}
+              {% if source_url %}
+              {% trans "downloaded from " %} {{source_url}}
+              {% else %}
+              {% trans "uploaded " %}
+              {% endif %}
+              {% trans "on " %} {{created_datetime}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+  {% endblock %}
+
+
+    <div class="row">
+
+            <div class="panel panel-success">
+                <div id="download-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="downloadData" data-toggle="collapse" data-target="#downloadData">
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Download Data' %}
+                  </h4>
+                </div>
+                <div id="downloadData" class="in panel-body">
+                  <p>{% trans "Alternative formats for reviewing your data" %}</p>
+
+                     {% if conversion == 'flatten' %}
+                     <p>{% trans "Conversion of your (JSON) data into a spreadsheet format. The results can be seen below" %}.</p>
+
+                        <ul class="list-unstyled left-space">
+                          <li>
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span> <a href="{{original_file.url}}">{{JSON}} <small>({{original}})</small></a> <small>{{original_file.size|filesizeformat }}</small>
+                          </li>
+                          {% if not conversion_error %}
+                            <li>
+                              <span class="glyphicon glyphicon-download" aria-hidden="true"></span> <a href="{{converted_url}}.xlsx">{{xlsx}} <small>({{converted}})</small></a> <small>{{converted_file_size|filesizeformat }}</small>
+                            </li>
+                          {% endif %}
+                        </ul>
+                        {% if conversion_error %}
+                            <p>{% blocktrans %}The JSON could not be converted to Spreadsheet due to the error:{% endblocktrans %} {{ conversion_error }}</p>
+
+                            {% include 'error_extra.html' %}
+                        {% endif %}
+
+                    {% elif conversion == 'unflatten' %}
+                    <p>{% trans "Conversion of your data into JSON format. The results can be seen below" %}.</p>
+                        <ul class="list-unstyled">
+                          <li>
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                            <a href="{{original_file.url}}">
+                              {% if file_type == 'xlsx' %}
+                                {{xlsx}} <small>({{original}})</small>
+                              {% elif file_type == 'csv' %}
+                                {{csv}} <small>({{original}})</small>
+                              {% endif %}
+                              </a>
+                              <small>{{original_file.size|filesizeformat }}</small>
+                            </li>
+                            <li>
+                              <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{converted_url}}">{{JSON}} <small>({{converted}})</small></a> <small>{{converted_file_size|filesizeformat }}</small>
+                            </li>
+                        </ul>
+
+                    {% else %}
+                        <ul class="list-unstyled">
+                          <li>
+                            <span class="glyphicon glyphicon-download" aria-hidden="true"></span><a href="{{original_file.url}}">{{JSON}} <small>({{original}})</small></a> <small>{{original_file.size|filesizeformat }}</small>
+                            {% if conversion == 'flattenable' %}
+                              <br/>
+                              <br/>
+                              <form method="post">
+                                <button name="flatten" value="true" type="submit" class="btn btn-success btn-sm">{% blocktrans %}Convert to Spreadsheet{% endblocktrans %}</button>
+                                {% csrf_token %}
+                              </form>
+                            {% endif %}
+                          </li>
+                        </ul>
+                    {% endif %}
+
+
+                </div>
+              </div>
+    </div>
+
+    <div class="row">
+
+        {% if validation_errors %}
+              {% for error_json, values in validation_errors %}
+                {% with error=error_json|json_decode %}
+                  {% cove_modal_errors className="validation-errors-"|concat:forloop.counter modalTitle=error.message errorList=values file_type=file_type full_table=True %}
+                {% endwith %}
+              {% endfor %}
+
+
+              <a name="validation-errors" class="anchor"></a>
+              <div class="panel panel-danger">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" >
+                  <h4 class="panel-title">
+                    {% trans 'Structural Errors' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="panel-body">
+                  {% include "validation_table.html" %}
+                </div>
+              </div>
+        {% else %}
+             <div class="panel panel-success">
+                <div id="validation-panel" class="panel-heading pointer" role="region">
+                  <h4 class="panel-title">
+                    {% trans 'Structural Errors' %}
+                  </h4>
+                </div>
+                <div id="validationTable" class="panel-body">
+                    <p>{% trans 'There were no structural errors' %}.</p>
+                </div>
+              </div>
+        {% endif %}
+
+    </div>
+
+    <div class="row">
+
+        {% if additional_fields_count %}
+
+              <a name="additional-fields" class="anchor"></a>
+              <div class="panel panel-danger">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable">
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Fields' %}
+                  </h4>
+                </div>
+                <div id="additionalFieldsTable" class="panel-body">
+                  {% include "additional_fields_table_all.html" %}
+                </div>
+              </div>
+        {% else %}
+             <div class="panel panel-success">
+                <div id="validation-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="validationTable" >
+                  <h4 class="panel-title">
+                    <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Fields' %}
+                  </h4>
+                </div>
+                <div id="additionalFieldsTable" class="collapse in panel-body">
+                    <p>{% trans 'There were no additional fields' %}.</p>
+                </div>
+              </div>
+        {% endif %}
+
+    </div>
+
+    {% if additional_open_codelist_values %}
+    <div class="row">
+      <a name="additional-open-codelist-values" class="anchor"></a>
+      <div class="panel panel-warning">
+        <div id="additional-open-codelist-values-panel" class="panel-heading pointer" role="region" aria-expanded="true"
+          aria-controls="additionalOpenCodelist" data-toggle="collapse" data-target="#additionalOpenCodelist">
+          <h4 class="panel-title">
+            <span class="our-title"><span
+                class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Codelist Values' %}</span>
+          </h4>
+        </div>
+        <div class="panel-body">
+          {% trans 'Your data contains a number of fields that use an open codelist. You should use values from the codelist whenever possible, but if the codelist does not provide the values you need, you are permitted to add additional values. The values below do not appear in the codelist; you should check that you intended these as additional values.' %}
+          <div id="additionalOpenCodelist" class="in">
+            {% with additional_codelist_values=additional_open_codelist_values %}
+            {% include "additional_codelist_values.html" %}
+            {% endwith%}
+          </div>
+          {% trans 'Make sure you list the definition of any additional codelist values you include within your <a href="http://standard.open-contracting.org/latest/en/implementation/publication_policy/">publication policy</a>, and if you believe they should be added as recommended values in the open codelist, please suggest this via the <a href="https://github.com/open-contracting/infrastructure/issues/new">OC4IDS issue tracker.</a>' %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if conformance_checks %}
+     <div class="row">
+     {% for check in conformance_checks %}
+       <a name="conformance-rules" class="anchor"></a>
+       <div class="panel panel-danger">
+         <div id="conformance-rules-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="conformanceRulesTable" data-toggle="collapse" data-target="#conformanceRulesTable">
+           <h4 class="panel-title">
+             <span class="our-title"><span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Conformance (Rules)' %}</span>
+           </h4>
+         </div>
+         <div id="conformanceRulesTable" class="collapse in">
+           <div class="panel-body">
+             <p class="explanation">{% trans 'Fixing the following issues will improve the interoperability of your data.' %}</p>
+             <br>
+             <p>
+               {% blocktrans trimmed with count=check.path_values|length %}
+               {{ count }} of your project <code>id</code> fields has a problem: There is no prefix or the prefix format is not recognised.
+               {% endblocktrans %}
+               <a class="view-all" role="region" aria-expanded="false" aria-controls="OC4IDSprefixesTable" data-toggle="collapse" data-target="#OC4IDSprefixesTable"><small>{% trans "View all errors" %} &#9660;</small></a>
+             </p>
+
+             <div id="OC4IDSprefixesTable" class="collapse">
+               <table class="table table-striped">
+                 <thead><tr><th>{% trans "id" %}</th><th>{% trans "Path" %}</th></tr></thead>
+                 <tbody>
+                   {% for result in check.path_values %}
+                   <tr><td>{{result.value}}</td><td>{{result.path}}</td></tr>
+                   {% endfor %}
+                 </tbody>
+               </table>
+             </div>
+             <p class="font-weight-light small">
+               {% blocktrans trimmed %}
+               What is the project <code>id</code> field? A globally unique identifier for this infrastructure project. Composed of an OC4IDS prefix and an identifier for the infrastructure project. For more information see <a href="https://standard.open-contracting.org/infrastructure/latest/en/guidance/identifiers/#">OC4IDS project identifier guidance</a>.
+               {% endblocktrans %}
+             </p>
+           </div>
+         </div>
+       </div>
+
+     {% endfor %}
+     </div>
+    {% endif %}
+
+    {% if additional_checks %}
+    <div class="row">
+
+      <a name="additional_checks" class="anchor"></a>
+      <div class="panel panel-warning">
+        <div id="additional-checks-panel" class="panel-heading pointer" role="region" aria-expanded="true" aria-controls="additionalChecksTable" data-toggle="collapse" data-target="#additionalChecksTable">
+          <h4 class="panel-title">
+            <span class="glyphicon glyphicon-collapse-up"></span>{% trans 'Additional Checks' %}
+          </h4>
+        </div>
+        <div id="additionalChecksTable" class="collapse in">
+          {% include "cove_oc4ids/additional_checks_table.html" %}
+        </div>
+      </div>
+
+    </div>
+    {% endif %}
+
+</div>
+{% endblock explore_content %}
+
+
+{% block bottomcontent1 %}
+{% endblock %}
+{% block bottomcontent2 %}
+{% endblock %}
