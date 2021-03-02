@@ -9,6 +9,9 @@ def startswith(validator, schema_value, instance, schema_parent_value):
 
 
 def patch_validator(validator):
-    validator.VALIDATORS.update({
-        "startswith": startswith
-    })
+    validator.VALIDATORS.update(
+        {
+            # Add validator functions above, and to this dict here
+            "startswith": startswith
+        }
+    )
