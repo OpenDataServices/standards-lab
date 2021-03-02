@@ -15,6 +15,6 @@ RETURN_TOTAL=`expr $RETURN_TOTAL + $?`
 
 echo "$RETURN_TOTAL checks failed!"
 
-if [ $RETURN_TOTAL > 1 ]; then
-  return 1
+if [ $RETURN_TOTAL -gt 0 ]; then
+  exit 1
 fi
