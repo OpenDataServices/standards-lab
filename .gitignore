@@ -133,4 +133,7 @@ dmypy.json
 *.swp
 *~
 node_modules
+
+# Standards Lab build files
 projects_dir
+_build
