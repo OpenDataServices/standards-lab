@@ -36,6 +36,10 @@
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
+        <label for="root-list-path">JSON key to main list of your data (needed for spreadsheet upload)</label>
+        <input type="text" class="form-control" id="project-root-list-path" v-model="project.rootListPath"/>
+      </div>
+      <div class="form-group">
         <button v-bind:disabled="!validProjectName" class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
       </div>
     </div>
