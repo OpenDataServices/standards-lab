@@ -55,6 +55,8 @@ The API provides endpoints primarily for the VueJS application. All responses ar
 
 The processor is responsible for starting, defining and communicating with processing jobs. Each processor implements a `start` function and a `monitor` function.
 
+When you run Standards Lab using docker-compose, the redis queue data is persisted in the `_build/redis-data/` directory.
+
 ## Utils
 
 Utility functions that are common to all of the django applications.
