@@ -48,7 +48,10 @@ class ProjectView(TemplateView):
 
         raise Http404
 
+
 import processor.cove
+
+
 class CoveResults(TemplateView):
     template_name = "cove_results.html"
 
@@ -56,7 +59,7 @@ class CoveResults(TemplateView):
         context = super().get_context_data(**kwargs)
 
         try:
-            context["project"] = get_project_config(self.kwargs["project_name"] )
+            context["project"] = get_project_config(self.kwargs["project_name"])
         except FileNotFoundError:
             return Http404
 
@@ -65,5 +68,3 @@ class CoveResults(TemplateView):
         print(context["cove"].keys())
 
         return context
-
-
