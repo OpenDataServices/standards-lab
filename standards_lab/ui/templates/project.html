@@ -28,20 +28,20 @@
       <div class="form-group">
         <label for="project-name-input">Project Name</label>
         <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name" v-on:keyup="unsavedChanges = true" >
-        <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
-        <p v-if="!validProjectName" class="alert alert-warning mt-2">Invalid characters in project name</p>
+        <small v-bind:class="{ 'text-danger': !validProjectName }">Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
       </div>
       <div class="form-group" v-if="ownThisProject">
         <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" v-on:change="unsavedChanges = true" >
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
-        <label for="root-list-path">JSON key to main list of your data (needed for spreadsheet upload)</label>
+        <label for="root-list-path">Top level key to the list of your data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
         <input type="text" class="form-control" id="project-root-list-path" v-model="project.rootListPath" v-on:keyup="unsavedChanges = true"/>
+        <small>When using spreadsheet data upload this is used as the top level key name to store the rows under.</small>
       </div>
-      <div class="form-group">
+      <div class="form-group d-flex flex-row align-items-baseline" style="padding: 0 !important;" v-bind:class="{ 'alert alert-warning' : unsavedChanges }">
         <button v-bind:disabled="!validProjectName" class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
-        <p v-if="unsavedChanges" class="alert alert-warning mt-2">You have unsaved changes</p>
+        <span v-if="unsavedChanges" class="ml-auto mr-2 d-inline">You have unsaved changes</span>
       </div>
     </div>
   </div>
