@@ -15,7 +15,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements_dev.txt
       - name: Lint with flake8
-        run: flake8
+        run: flake8 standards_lab/
       - name: Run black
         if: ${{ always() }}
-        uses: psf/black@stable
+        uses: psf/black@master
+        with:
+          black_args: "standards_lab/ --check --diff"
