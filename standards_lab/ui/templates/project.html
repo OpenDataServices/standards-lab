@@ -27,16 +27,21 @@
       Modified: <code>{{project.modified}}</code></p>
       <div class="form-group">
         <label for="project-name-input">Project Name</label>
-        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name"  >
+        <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name" v-on:keyup="unsavedChanges = true" >
         <small>Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
         <p v-if="!validProjectName" class="alert alert-warning mt-2">Invalid characters in project name</p>
       </div>
       <div class="form-group" v-if="ownThisProject">
-        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" >
+        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" v-on:change="unsavedChanges = true" >
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
+        <label for="root-list-path">JSON key to main list of your data (needed for spreadsheet upload)</label>
+        <input type="text" class="form-control" id="project-root-list-path" v-model="project.rootListPath" v-on:keyup="unsavedChanges = true"/>
+      </div>
+      <div class="form-group">
         <button v-bind:disabled="!validProjectName" class="btn btn-primary" v-on:click="updateProjectProperties">{{saveLabel}}</button>
+        <p v-if="unsavedChanges" class="alert alert-warning mt-2">You have unsaved changes</p>
       </div>
     </div>
   </div>
@@ -193,6 +198,8 @@
         jsonEditorData: {},
         jsonEditorDataFileName: "untitled.json",
         maximiseDataEditor: false,
+
+        unsavedChanges: false,
       }
     },
 
@@ -202,7 +209,24 @@
 
       this.ownThisProject = ownThisProject;
 
-      setInterval(() => { this.getProjectProperties(); }, 2000);
+      setInterval(async () => {
+
+        let project = await this.getProjectProperties();
+
+        if (this.unsavedChanges){
+          /* We have unsavedChanges check if those unsavedChanges have been
+           * reverted by the user by comparing against the server's copy of project
+           * this could get expensive if the project object gets larger in the future
+           */
+
+          if (JSON.stringify(this.project) === JSON.stringify(project)){
+            this.unsavedChanges = false;
+          }
+          /* Note we not updating this.project on this cycle */
+        } else {
+          this.project = project;
+        }
+      }, 2000);
     },
 
     watch: {
@@ -213,7 +237,6 @@
           this.saveLabel = "Save";
         }
       },
-
     },
 
     computed: {
@@ -224,17 +247,22 @@
 
     methods: {
       /* GET the project properties */
-      getProjectProperties: function(){
+      getProjectProperties: async function(){
 
-        fetch(projectApiUrl, {
+        let response = await fetch(projectApiUrl, {
           method:'GET',
           credentials: 'same-origin',
           headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
-        }).then(response => response.json()).then(result => {
-          if (result.error == undefined){
-            this.project = result;
-          }
         });
+
+        let project_json = await response.json();
+
+        if (project_json.error === undefined){
+          return project_json;
+        } else {
+          console.error(project_json.error);
+          return this.project;
+        }
       },
 
       /* Update any of the project's properties */
@@ -247,6 +275,7 @@
           body: JSON.stringify(this.project),
         }).then(response => response.json()).then(result => {
           if (result.error == undefined){
+            this.unsavedChanges = false;
             this.project = result;
 
             /* If we have changed project name for simplicity we reload the page to the new project page */
