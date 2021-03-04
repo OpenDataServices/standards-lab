@@ -14,10 +14,5 @@ urlpatterns = [
         ui.views.CoveResults.as_view(),
         name="cove-results",
     ),
-    path(
-        "p/<slug:project_name>/cove-results2",
-        ui.views.CoveResults2.as_view(),
-        name="cove-results2",
-    ),
     path("about", TemplateView.as_view(template_name="about.html"), name="about"),
 ]

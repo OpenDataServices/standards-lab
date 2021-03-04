@@ -1,9 +1,10 @@
+import os
+import processor.cove
+from django.conf import settings
 from django.http import Http404
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from utils.project import get_project_config, create_new_project
-from django.conf import settings
-
-import os
 
 
 class Home(TemplateView):
@@ -49,30 +50,8 @@ class ProjectView(TemplateView):
         raise Http404
 
 
-import processor.cove
-
-
 class CoveResults(TemplateView):
     template_name = "cove_results.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        try:
-            context["project"] = get_project_config(self.kwargs["project_name"])
-        except FileNotFoundError:
-            return Http404
-
-        context["cove"] = processor.cove.monitor(context["project"])
-
-        return context
-
-
-from django.template.loader import render_to_string
-
-
-class CoveResults2(TemplateView):
-    template_name = "cove_results2.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
