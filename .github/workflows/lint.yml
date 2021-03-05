@@ -18,6 +18,4 @@ jobs:
         run: flake8 standards_lab/
       - name: Run black
         if: ${{ always() }}
-        uses: psf/black@master
-        with:
-          black_args: "standards_lab/ --check --diff"
+        run: black standards_lab/ --check --diff
