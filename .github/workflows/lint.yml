@@ -20,4 +20,4 @@ jobs:
         if: ${{ always() }}
         uses: psf/black@master
         with:
-          black_args: "standards_lab/ --check --diff"
+          args: "standards_lab/ --check --diff"
