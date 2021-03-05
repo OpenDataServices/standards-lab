@@ -33,6 +33,10 @@ contextlib2==0.6.0.post1
     # via schema
 dealer==2.1.0
     # via libcoveweb
+coverage==5.5
+    # via coveralls
+coveralls==3.0.1
+    # via -r requirements_dev.in
 defusedxml==0.6.0
     # via odfpy
 django-bootstrap3==14.2.0
@@ -55,6 +59,8 @@ django==2.2.19
     #   django-redis
     #   django-rq
     #   libcoveweb
+docopt==0.6.2
+    # via coveralls
 et-xmlfile==1.0.1
     # via openpyxl
 flake8==3.8.4
@@ -126,6 +132,7 @@ regex==2020.11.13
     # via black
 requests==2.25.1
     # via
+    #   coveralls
     #   libcove
     #   libcoveweb
 rfc3987==1.3.8
