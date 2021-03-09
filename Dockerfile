@@ -8,4 +8,5 @@ CMD sh -c ' \
     cd standards_lab && \
     python manage.py runserver 0.0.0.0:8001 \
     '
+ENV ROOT_PROJECTS_DIR=/projects_dir
 EXPOSE 8001
