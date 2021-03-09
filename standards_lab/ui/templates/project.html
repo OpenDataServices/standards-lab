@@ -22,7 +22,7 @@
 
   <div class="card mb-3">
     <div class="card-body">
-      <h4 class="card-title">Project Settings</h4>
+      <h2 class="card-title">Project Settings</h2>
       <p>Owner: <code>{{ownThisProject}}</code><br />
       Modified: <code>{{project.modified}}</code></p>
       <div class="form-group">
@@ -35,7 +35,7 @@
         <label for="project-editable">Editable by anyone with the link</label>
       </div>
       <div class="form-group">
-        <label for="root-list-path">Top level key to the list of your data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
+        <label for="project-root-list-path">Top level key to the list of your data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
         <input type="text" class="form-control" id="project-root-list-path" v-model="project.rootListPath" v-on:keyup="unsavedChanges = true"/>
         <small>When using spreadsheet data upload this is used as the top level key name to store the rows under.</small>
       </div>
@@ -52,14 +52,14 @@
     </button>
     <div class="card-body">
       <!-- Schema section -->
-      <h4 class="card-title">Schema</h4>
+      <h2 class="card-title">Schema</h2>
 
       <div class="row">
 
         <div class="col">
           <div class="form-group">
-            <label>Schema upload</label>
-            <input type="file" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
+            <label for="form-control-file-schema">Schema upload</label>
+            <input type="file" id="form-control-file-schema" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
             <div v-show="spinner == 'schema'" class="spinner-border m-2" role="status">
               <span class="sr-only">Loading...</span>
             </div>
@@ -107,14 +107,14 @@
       <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
     </button>
     <div class="card-body">
-      <h4 class="card-title">Data</h4>
+      <h2 class="card-title">Data</h2>
 
       <div class="row">
 
         <div class="col">
           <div class="form-group">
-            <label>Data upload</label>
-            <input type="file" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
+            <label for="form-control-file-data">Data upload</label>
+            <input type="file" id="form-control-file-data" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
             <div v-show="spinner == 'data'" class="spinner-border m-2" role="status">
               <span class="sr-only">Loading...</span>
             </div>
