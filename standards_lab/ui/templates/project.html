@@ -150,11 +150,37 @@
       <textarea class="form-control" style="width:100%; min-height: 40vh" v-else v-model="jsonEditorData"></textarea>
 
       <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save</button>
-      <button class="btn btn-primary mt-2" v-on:click="startProcess('cove')">Test the data</button>
-      <a class="btn btn-primary mt-2" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="displayResults">Results</a>
     </div>
 
   </div>
+
+
+
+  <div class="card mb-3" v-bind:class="{ maximise: maximiseDataEditor }">
+    <div class="card-body">
+      <h2 class="card-title">Test</h2>
+      <p>Test the data with the configuration and schema</p>
+
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-primary mt-2" v-on:click="startProcess('cove')" v-bind:disabled="spinner == 'test'">Start Test</button>
+          <div v-show="spinner == 'test'" class="spinner-border m-2" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+
+        <div class="col">
+          <p v-if="testResults">Test Results Summary</p>
+          <div v-if="testResults" v-for="(test, fileName) in testResults">
+            <p class="alert alert-warning" v-if="test.result.status != 'SUCCESS'">Something went wrong testing the data {{test.result.error}}</p>
+            <p v-else><strong>{{fileName}}</strong> validation errors: {{test.result.context.validation_errors_count}}</p>
+          </div>
+          <a class="mt-2" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="testResults">View Result Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   </div>
 
@@ -165,7 +191,6 @@
 <script>
   var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
   var projectCoveResultsUrl = "{% url "ui:cove-results" view.kwargs.project_name %}";
-  var displayResults = false;
   var csrfmiddlewaretoken_value = "{{ csrf_token }}";
   var initialProject = undefined;
   var ownThisProject = false;
@@ -204,6 +229,9 @@
         maximiseDataEditor: false,
 
         unsavedChanges: false,
+
+        testResults: false,
+        testResultsPollerTimer: undefined,
       }
     },
 
@@ -212,6 +240,8 @@
       this.project = Object.assign({}, initialProject);
 
       this.ownThisProject = ownThisProject;
+
+      this.getProcessResults("cove");
 
       setInterval(async () => {
 
@@ -410,8 +440,56 @@
         body: JSON.stringify({ action: "start", processName: processName}),
         }).then(response => response.json()).then(result => {
           console.log(result);
+          /* poll for results */
+          this.getProcessResults(processName);
         });
-      this.displayResults = true;
+    },
+
+    /* Gets process results if they exist */
+    getProcessResults: async function(processName){
+      console.log("doing get process");
+      this.testResults = undefined;
+
+        let response = await fetch(projectApiUrl + '/process');
+        let responseJson = await response.json();
+
+        let isWorking = false;
+        let isFinished = false;
+
+        for (testedItem in responseJson[processName]){
+          let status = responseJson[processName][testedItem].rq_status;
+          /* Any of these states mean the process is working */
+          isWorking = (status == 'queued' || status == 'started' || status == 'deferred');
+          /* We wait for all results to have finished */
+          if (isWorking){
+            break;
+          }
+
+          /* this shouldn't be reached unless isWorking is false */
+          isFinished = (status == 'finished');
+        }
+
+        if (!isWorking && isFinished){
+          clearTimeout(this.testResultsPollerTimer);
+          this.testResults = responseJson[processName];
+          this.testResultsPollerTimer = undefined;
+          this.spinner = undefined;
+        }
+
+        /* we are idle and have no results from any processes to show */
+        if (!isWorking && !isFinished){
+          clearTimeout(this.testResultsPollerTimer);
+          this.testResultsPollerTimer = undefined;
+          this.spinner = undefined;
+        }
+
+        /* We are working on processing */
+        if (isWorking && !this.testResultsPollerTimer){
+          this.spinner = 'test';
+          this.testResultsPollerTimer = setTimeout(() => {
+            this.getProcessResults(processName);
+          }, 2000);
+      }
     },
 
   } /* end methods */
