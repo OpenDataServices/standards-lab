@@ -56,6 +56,10 @@ flattentool==0.15.3
     # via libcove
 idna==2.10
     # via requests
+importlib-metadata==1.7.0
+    # via
+    #   django-bootstrap3
+    #   jsonschema
 jdcal==1.4.1
     # via openpyxl
 json-merge-patch==0.2
@@ -137,7 +141,9 @@ xmltodict==0.12.0
     #   flattentool
     #   libcoveweb
 zipp==1.2.0
-    # via libcoveweb
+    # via
+    #   importlib-metadata
+    #   libcoveweb
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
