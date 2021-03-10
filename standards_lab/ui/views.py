@@ -62,9 +62,10 @@ class CoveResults(TemplateView):
             return Http404
 
         # Render the lib-cove-web results snippets
+        context["cove_results_pages"] = []
+        cove = processor.cove.monitor(context["project"])
+
         try:
-            context["cove_results_pages"] = []
-            cove = processor.cove.monitor(context["project"])
 
             for file_result in cove:
                 snippet_context = cove[file_result]["result"]["context"]
@@ -82,6 +83,8 @@ class CoveResults(TemplateView):
                 )
 
         except KeyError:
-            return {"results": "expired"}
+            context["error"] = "Results Expired"
+        finally:
+            return context
 
         return context
