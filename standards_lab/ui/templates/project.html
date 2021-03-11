@@ -23,6 +23,7 @@
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="card-title">Project Settings</h2>
+      <p>Project settings show you the current status of the standards project, as well as any settings which affect the way in which the data and schema being developed interact. <a href="#DOCS#"><i>Project Settings documentation.</i></a></p>
       <p>Owner: <code>{{ownThisProject}}</code><br />
       Modified: <code>{{project.modified}}</code></p>
       <div class="form-group">
@@ -31,8 +32,9 @@
         <small v-bind:class="{ 'text-danger': !validProjectName }">Accepted characters are A-Z, a-z, 0-9 , - and _ </small>
       </div>
       <div class="form-group" v-if="ownThisProject">
-        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" v-on:change="unsavedChanges = true" >
         <label for="project-editable">Editable by anyone with the link</label>
+        <input type="checkbox" name="editable" id="project-editable" v-model="project.editable" v-on:change="unsavedChanges = true" >
+        <small class="d-block">Setting as editable by anyone allows anyone with the link to this project to make any changes.</small>
       </div>
       <div class="form-group">
         <label for="project-root-list-path">Top level key to the list of your data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
@@ -53,7 +55,7 @@
     <div class="card-body">
       <!-- Schema section -->
       <h2 class="card-title">Schema</h2>
-
+      <p>Schema JSON can be uploaded and edited directly. The schema must conform to <a href="https://json-schema.org/">JSON Schema specifications</a>. Once saved or uploaded the schema will be used to Test any data provided. <a href="#DOCS#"><i>Project Schema documentation.</i></a></p>
       <div class="row">
 
         <div class="col">
@@ -97,7 +99,7 @@
       </div>
 
       <v-jsoneditor ref="schemaEditor" v-model="jsonEditorSchema" :options="{ 'modes': [ 'tree', 'view', 'form', 'code', 'text', 'preview' ]}"  :plus="false" class="border" height="40vh"></v-jsoneditor>
-      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorSchema, jsonEditorSchemaFileName, 'schema')">Save</button>
+      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorSchema, jsonEditorSchemaFileName, 'schema')">Save Schema</button>
 
     </div>
   </div>
@@ -108,6 +110,7 @@
     </button>
     <div class="card-body">
       <h2 class="card-title">Data</h2>
+      <p>Data can be uploaded to the project. Data can be in CSV format (<code>.csv</code>), JSON format (<code>.json</code>), Microsoft Excel (<code>.xls</code> and <code>.xlsx</code>) or Open spreadsheet format (<code>.ods</code>). Editing in the browser can be done on CSV and JSON files. <i><a href="#DOCS#">Project Data documentation.</a></i></p>
 
       <div class="row">
 
@@ -149,7 +152,7 @@
       <v-jsoneditor ref="dataEditor" v-if="typeof(jsonEditorData) === 'object'" v-model="jsonEditorData" :options="{ 'modes': [ 'code', 'text', 'view', 'tree' ]}"  :plus="false" class="border" height="40vh"></v-jsoneditor>
       <textarea class="form-control" style="width:100%; min-height: 40vh" v-else v-model="jsonEditorData"></textarea>
 
-      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save</button>
+      <button class="btn btn-primary mt-2" v-on:click="uploadUpdatedProjectData(jsonEditorData, jsonEditorDataFileName, 'data')">Save Data</button>
     </div>
 
   </div>
@@ -159,7 +162,7 @@
   <div class="card mb-3" v-bind:class="{ maximise: maximiseDataEditor }">
     <div class="card-body">
       <h2 class="card-title">Test</h2>
-      <p>Test the data with the configuration and schema</p>
+      <p>Test the project data with the configuration and schema. <a href="#DOCS#"><i>Project Test documentation.</i></a></p>
 
       <div class="row">
         <div class="col">
@@ -216,7 +219,7 @@
           rootSchema: undefined,
         },
         spinner: undefined,
-        saveLabel: "Save",
+        saveLabel: "Save Settings",
         projectApiUrl: projectApiUrl,
         projectCoveResultsUrl: projectCoveResultsUrl,
 
@@ -266,9 +269,9 @@
     watch: {
       "project.name": function(){
         if (this.project.name != initialProject.name){
-          this.saveLabel = "Save New Version";
+          this.saveLabel = "Save As New Project";
         } else {
-          this.saveLabel = "Save";
+          this.saveLabel = "Save Settings";
         }
       },
     },
