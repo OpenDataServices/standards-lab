@@ -5,7 +5,7 @@
   <h1>Welcome to Open Standards Lab</h1>
 
   <p>Open Standards Lab helps you to develop standards and improve the quality of Open Data.
-     Please see the <a href="{% url "ui:about" %}">About</a> pages and <a href="#TODO">Documentation</a>
+     Please see the <a href="{% url "ui:about" %}">About</a> pages and <a href="https://standards-lab.readthedocs.io/en/latest/">Documentation</a>
      for more information.</p>
   <p>Select from available projects {% if EDIT_MODE %}or create a new project{% endif %}.</p>
 
@@ -13,11 +13,16 @@
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">Available Projects</h5>
-      <ul>
-        {% for project in projects %}
-        <li><a href="{% url "ui:project" project %}">{{project}}</a></li>
-        {% endfor %}
-      </ul>
+      <p>All projects are accessible to anyone using this system.</p>
+      <div style="max-height: 20vh; overflow-y: auto;">
+        <div style="column-count: 6;">
+          <ul>
+            {% for project in projects %}
+            <li><a href="{% url "ui:project" project %}">{{project}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
   {% endif %}
