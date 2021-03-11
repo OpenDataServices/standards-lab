@@ -1,10 +1,13 @@
 import os
+
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import override_settings
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+
+from utils.project import delete_project
 
 
 @override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test")
@@ -34,13 +37,7 @@ class BrowserTests(StaticLiveServerTestCase):
 
         # remove projects from temporary folder.
         for project in os.listdir("/tmp/standards-lab-test"):
-            if project:
-                for file in os.listdir("/tmp/standards-lab-test/{}".format(project)):
-                    if file:
-                        os.remove("/tmp/standards-lab-test/{}/{}".format(project, file))
-                os.rmdir("/tmp/standards-lab-test/{}".format(project))
-        print("project folder", os.listdir("/tmp/standards-lab-test"))
-
+            delete_project(project) if project else None
 
     def get(self, url):
         self.driver.get("%s%s" % (self.live_server_url, url))
@@ -51,6 +48,10 @@ class BrowserTests(StaticLiveServerTestCase):
 
         submit = self.driver.find_element_by_id("launch-new-project-link")
         submit.send_keys(Keys.RETURN)
+
+    # -----------
+    #    HOME
+    # -----------
 
     def test_homepage(self):
         self.get("/")
@@ -70,7 +71,9 @@ class BrowserTests(StaticLiveServerTestCase):
 
         accepted_chars = self.driver.find_element_by_id("accepted-chars-hint")
         # black
-        self.assertEqual("rgba(33, 37, 41, 1)", accepted_chars.value_of_css_property("color"))
+        self.assertEqual(
+            "rgba(33, 37, 41, 1)", accepted_chars.value_of_css_property("color")
+        )
 
         self.create_new_project("new project bar")
         current_url = self.driver.current_url.replace("/#", "")
@@ -78,7 +81,9 @@ class BrowserTests(StaticLiveServerTestCase):
         # homepage
         self.assertEquals(self.live_server_url, current_url)
         # red
-        self.assertEqual("rgba(204, 51, 13, 1)", accepted_chars.value_of_css_property("color"))
+        self.assertEqual(
+            "rgba(204, 51, 13, 1)", accepted_chars.value_of_css_property("color")
+        )
 
     def test_available_projects_homepage(self):
         self.get("/")
