@@ -49,3 +49,24 @@ def create_new_project(project_name, json_format=False):
         return True, json.dumps(project)
 
     return True, project
+
+
+def delete_project(project_name):
+    """
+    Delete all the files and directory for a project, and clear it from the cache
+    """
+
+    path = os.path.join(settings.ROOT_PROJECTS_DIR, project_name)
+
+    if cache.has_key(project_name):
+        cache.delete(project_name)
+    if os.path.exists(path):
+        try:
+            os.rmdir(path)
+        except OSError:
+            files = os.listdir(path)
+            for file in files:
+                os.remove(os.path.join(path, file))
+            os.rmdir(path)
+
+    return True
