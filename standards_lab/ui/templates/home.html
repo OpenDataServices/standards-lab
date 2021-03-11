@@ -9,6 +9,7 @@
      for more information.</p>
   <p>Select from available projects {% if EDIT_MODE %}or create a new project{% endif %}.</p>
 
+  {% if projects %}
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">Available Projects</h5>
@@ -19,6 +20,7 @@
       </ul>
     </div>
   </div>
+  {% endif %}
 
   {% if EDIT_MODE %}
   <div class="card">
