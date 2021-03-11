@@ -197,14 +197,17 @@ def monitor(project):
     """
 
     output = {}
-    for data_file in project["dataFiles"]:
-        job_id = project["name"] + "_cove_results_" + data_file
-        try:
-            job = Job.fetch(job_id, connection=django_rq.get_connection())
-            output[data_file] = {
-                "rq_status": job.get_status(),
-                "result": job.result,
-            }
-        except NoSuchJobError:
-            output[data_file] = {"rq_status": "nosuchjob"}
+    project_data_files = project.get("dataFiles")
+
+    if project_data_files:
+        for data_file in project_data_files:
+            job_id = project["name"] + "_cove_results_" + data_file
+            try:
+                job = Job.fetch(job_id, connection=django_rq.get_connection())
+                output[data_file] = {
+                    "rq_status": job.get_status(),
+                    "result": job.result,
+                }
+            except NoSuchJobError:
+                output[data_file] = {"rq_status": "nosuchjob"}
     return output
