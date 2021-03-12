@@ -160,7 +160,6 @@ RQ_QUEUES = {
 EDIT_MODE = True
 
 ROOT_PROJECTS_DIR = env("ROOT_PROJECTS_DIR")
-os.makedirs(ROOT_PROJECTS_DIR, exist_ok=True)
 
 # MIME types of files allowed in project
 ALLOWED_PROJECT_MIME_TYPES = [
