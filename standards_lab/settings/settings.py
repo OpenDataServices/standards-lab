@@ -12,11 +12,25 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import environ
+import warnings
+
+from django.utils.crypto import get_random_string
+
+
+chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)"
+secret_key = get_random_string(50, chars)
+if "SECRET_KEY" not in os.environ:
+    warnings.warn(
+        "SECRET_KEY should be added to Environment Variables. Random key will be used instead."
+    )
+
 
 env = environ.Env(
     REDIS_URL=(str, "redis://localhost:6379"),
     ROOT_PROJECTS_DIR=(str, "/tmp/standards-lab/"),
     ALLOWED_HOSTS=(list, []),
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, secret_key),
 )
 
 
@@ -28,10 +42,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "e@x=(0a__n%ld4g+&wx5!e4va6%=&@z4m)#etl0k=xj!bea+h^"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
