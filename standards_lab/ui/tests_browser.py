@@ -100,3 +100,85 @@ class BrowserTests(StaticLiveServerTestCase):
 
         self.assertIn("Available Projects", body_text)
         self.assertIn("new_project_bar", body_text)
+
+    # -------------
+    #    PROJECT
+    # -------------
+
+    def upload_schema_file(self, project_name, file_name):
+        # create new project
+        self.get("/")
+        self.create_new_project(project_name)
+
+        # upload schema file
+        schema_upload = self.driver.find_element_by_id("form-control-file-schema")
+        schema_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", file_name)
+        )
+
+    def test_project_settings_project_name_field(self):
+        self.get("/")
+        self.create_new_project("new_project_foo")
+
+        # project name is pre populated.
+        project_name = self.driver.find_element_by_id(
+            "project-name-input"
+        ).get_attribute("value")
+
+        self.assertEqual("new_project_foo", project_name)
+
+    def test_upload_schema_file(self):
+        self.get("/")
+        self.create_new_project("new_project_foo")
+
+        schema_upload = self.driver.find_element_by_id("form-control-file-schema")
+        schema_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", "test_schema.json")
+        )
+        schema_files = self.driver.find_element_by_id("current-schema-files").text
+
+        self.assertIn("test_schema.json", schema_files)
+
+    def test_schema_file_open_field(self):
+        self.upload_schema_file("new_project_foo", "test_schema.json")
+
+        file_open = self.driver.find_element_by_id("schema-open").get_attribute("value")
+
+        # by default it is "schema.json"
+        self.assertEqual("schema.json", file_open)
+
+        # click on schema file
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_schema.json']"
+        ).click()
+        file_open = self.driver.find_element_by_id("schema-open").get_attribute("value")
+
+        self.assertEqual("test_schema.json", file_open)
+
+    def test_schema_json_tree(self):
+        self.upload_schema_file("new_project_foo", "test_schema.json")
+
+        json_tree = self.driver.find_element_by_class_name("jsoneditor-tree").text
+
+        self.assertIn("empty object", json_tree)
+
+        # click on schema file
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_schema.json']"
+        ).click()
+        json_tree = self.driver.find_element_by_class_name("jsoneditor-tree").text
+
+        self.assertIn("Data Standard Schema", json_tree)
+
+    def test_save_schema_file(self):
+        """Check that saving the schema file doesn't break anything."""
+
+        self.upload_schema_file("new_project_foo", "test_schema.json")
+
+        # click on schema file
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_schema.json']"
+        ).click()
+
+        # click on "Save Schema" button
+        self.driver.find_element_by_xpath("//button[text()='Save Schema']").click()
