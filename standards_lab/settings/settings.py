@@ -14,9 +14,9 @@ import os
 import environ
 
 env = environ.Env(
-    REDIS_HOST=(str, "localhost"),
-    REDIS_PORT=(str, "6379"),
+    REDIS_URL=(str, "redis://localhost:6379"),
     ROOT_PROJECTS_DIR=(str, "/tmp/standards-lab/"),
+    ALLOWED_HOSTS=(list, []),
 )
 
 
@@ -33,7 +33,7 @@ SECRET_KEY = "e@x=(0a__n%ld4g+&wx5!e4va6%=&@z4m)#etl0k=xj!bea+h^"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 
 # Application definition
@@ -132,8 +132,7 @@ STATIC_URL = "/static/"
 
 INTERNAL_IPS = ("127.0.0.1",)
 
-REDIS_HOST = env("REDIS_HOST")
-REDIS_PORT = env("REDIS_PORT")
+REDIS_URL = env("REDIS_URL")
 
 # Redis Session backend
 # https://github.com/martinrusev/django-redis-sessions
@@ -144,7 +143,7 @@ SESSION_CACHE_ALIAS = "default"
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}/1",
+        "LOCATION": f"{REDIS_URL}/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
@@ -155,11 +154,7 @@ CACHES = {
 # https://github.com/rq/django-rq/blob/master/README.rst
 
 RQ_QUEUES = {
-    "default": {
-        "HOST": REDIS_HOST,
-        "PORT": REDIS_PORT,
-        "DB": 0,
-    },
+    "default": {"URL": f"{REDIS_URL}/0"},
 }
 
 EDIT_MODE = True
