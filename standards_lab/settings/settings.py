@@ -25,17 +25,18 @@ if "SECRET_KEY" not in os.environ:
     )
 
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 env = environ.Env(
     REDIS_URL=(str, "redis://localhost:6379"),
     ROOT_PROJECTS_DIR=(str, "/tmp/standards-lab/"),
     ALLOWED_HOSTS=(list, []),
     DEBUG=(bool, True),
     SECRET_KEY=(str, secret_key),
+    STATIC_ROOT=(str, os.path.join(BASE_DIR, "staticfiles")),
 )
-
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -143,6 +145,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
+
+STATIC_ROOT = env("STATIC_ROOT")
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 INTERNAL_IPS = ("127.0.0.1",)
 
