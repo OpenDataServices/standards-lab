@@ -68,7 +68,7 @@
           </div>
         </div>
 
-        <div class="col">
+        <div class="col" id="current-schema-files">
           Current schema files:
           <div class="btn-group m-1" v-for="file in project.schemaFiles">
             <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorSchema')">
@@ -448,7 +448,6 @@
 
     /* Gets process results if they exist */
     getProcessResults: async function(processName){
-      console.log("doing get process");
       this.testResults = undefined;
 
         let response = await fetch(projectApiUrl + '/process');
