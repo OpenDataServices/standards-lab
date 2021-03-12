@@ -177,7 +177,7 @@
           <p v-if="testResults">Test Results Summary</p>
           <div v-if="testResults" v-for="(test, fileName) in testResults">
             <p class="alert alert-warning" v-if="test.result.status != 'SUCCESS'">Something went wrong testing the data {{test.result.error}}</p>
-            <p v-else><strong>{{fileName}}</strong> validation errors: {{test.result.context.validation_errors_count}}</p>
+            <p v-else><a target="_blank" v-bind:href="projectCoveResultsUrl + '#' + fileName">{{fileName}}</a> validation errors: {{test.result.context.validation_errors_count}}</p>
           </div>
         </div>
       </div>
