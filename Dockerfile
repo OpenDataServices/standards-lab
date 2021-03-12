@@ -6,9 +6,11 @@ RUN pip install -r /code/requirements_dev.txt
 COPY . /code/
 WORKDIR /code/
 ENV ROOT_PROJECTS_DIR=/projects_dir
+ENV STATIC_ROOT=/staticfiles
+RUN sh -c 'cd standards_lab && python manage.py collectstatic'
 CMD sh -c ' \
     mkdir -p "$ROOT_PROJECTS_DIR" && \
     cd standards_lab && \
-    python manage.py runserver 0.0.0.0:80 \
+    gunicorn --bind 0.0.0.0:80 wsgi:application \
     '
 EXPOSE 80

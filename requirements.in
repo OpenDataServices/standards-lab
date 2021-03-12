@@ -5,3 +5,7 @@ django-rq==2.4.0
 pip-tools
 django-environ
 django-redis==4.12.*
+
+# For production
+gunicorn
+whitenoise

@@ -19,6 +19,8 @@ jobs:
       uses: supercharge/redis-github-action@1.2.0
       with:
         redis-version: 6
+    - name: Collect static files
+      run:  ./standards_lab/manage.py collectstatic
     - name: Run tests
       run: coverage run --source='./standards_lab' ./standards_lab/manage.py test ./standards_lab
 
