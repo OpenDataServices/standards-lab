@@ -170,6 +170,7 @@
           <div v-show="spinner == 'test'" class="spinner-border m-2" role="status">
             <span class="sr-only">Loading...</span>
           </div>
+          <a class="mt-3 d-block" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="testResults">View Result Details</a>
         </div>
 
         <div class="col">
@@ -178,7 +179,6 @@
             <p class="alert alert-warning" v-if="test.result.status != 'SUCCESS'">Something went wrong testing the data {{test.result.error}}</p>
             <p v-else><strong>{{fileName}}</strong> validation errors: {{test.result.context.validation_errors_count}}</p>
           </div>
-          <a class="mt-2" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="testResults">View Result Details</a>
         </div>
       </div>
     </div>
