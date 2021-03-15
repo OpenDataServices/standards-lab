@@ -14,7 +14,7 @@ from utils.project import delete_project
 chromedriver_autoinstaller.install()
 
 
-@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test")
+@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test", DEBUG=True)
 class BrowserTests(StaticLiveServerTestCase):
     """ Browser test using latest Chrome/Chromium stable"""
 
