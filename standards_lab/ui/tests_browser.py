@@ -6,8 +6,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+import chromedriver_autoinstaller
 
 from utils.project import delete_project
+
+# Ensure the correct version of chromedriver is installed
+chromedriver_autoinstaller.install()
 
 
 @override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test")

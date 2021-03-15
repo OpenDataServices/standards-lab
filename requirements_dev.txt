@@ -22,6 +22,8 @@ certifi==2020.12.5
     #   sentry-sdk
 chardet==4.0.0
     # via requests
+chromedriver-autoinstaller==0.2.2
+    # via -r requirements_dev.in
 click==7.1.2
     # via
     #   black
@@ -71,11 +73,6 @@ gunicorn==20.0.4
     # via -r requirements.in
 idna==2.10
     # via requests
-importlib-metadata==1.7.0
-    # via
-    #   django-bootstrap3
-    #   flake8
-    #   jsonschema
 jdcal==1.4.1
     # via openpyxl
 json-merge-patch==0.2
@@ -181,9 +178,7 @@ xmltodict==0.12.0
     #   flattentool
     #   libcoveweb
 zipp==1.2.0
-    # via
-    #   importlib-metadata
-    #   libcoveweb
+    # via libcoveweb
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
