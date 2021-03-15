@@ -47,7 +47,7 @@ def lib_cove_wrapper(
     """
 
     schema_name = project["rootSchema"]
-    root_list_path = project["rootListPath"]
+    root_list_path = project.get("rootListPath", "")
 
     schema_obj = SchemaJsonMixin()
 
