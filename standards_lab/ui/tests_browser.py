@@ -1,5 +1,6 @@
 import os
 
+import chromedriver_autoinstaller
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import override_settings
 from selenium import webdriver
@@ -9,8 +10,11 @@ from selenium.webdriver.common.keys import Keys
 
 from utils.project import delete_project
 
+# Ensure the correct version of chromedriver is installed
+chromedriver_autoinstaller.install()
 
-@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test")
+
+@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test", DEBUG=True)
 class BrowserTests(StaticLiveServerTestCase):
     """ Browser test using latest Chrome/Chromium stable"""
 
