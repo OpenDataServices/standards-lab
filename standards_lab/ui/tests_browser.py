@@ -242,3 +242,43 @@ class BrowserTests(StaticLiveServerTestCase):
         json_editor = self.driver.find_element_by_class_name("ace-jsoneditor").text
 
         self.assertIn("grants", json_editor)
+
+    def start_project_test(self, project_name, schema_file, data_file):
+        # create new project
+        self.get("/")
+        self.create_new_project(project_name)
+
+        # upload schema file
+        schema_upload = self.driver.find_element_by_id("form-control-file-schema")
+        schema_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", schema_file)
+        )
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_schema.json']"
+        ).click()
+        self.driver.find_element_by_xpath("//button[text()='Save Schema']").click()
+
+        # upload data file
+        data_upload = self.driver.find_element_by_id("form-control-file-data")
+        data_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", data_file)
+        )
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_data.json']"
+        ).click()
+        self.driver.find_element_by_xpath("//button[text()='Save Data']").click()
+
+        # start test
+        self.driver.find_element_by_xpath("//button[text()='Start Test']").click()
+
+    # def test_project_data_test(self):
+    #     self.start_project_test("new_project_foo", "test_schema.json", "test_data.json")
+    #
+    #     self.assertIn(
+    #         "Test Results Summary",
+    #         self.driver.find_element_by_id("test-project-data").text
+    #     )
+    #
+    # def test_view_results_details_link(self):
+    #     self.start_project_test("new_project_foo", "test_schema.json", "test_data.json")
+    #     self.driver.find_element_by_id("view-results-details").click()

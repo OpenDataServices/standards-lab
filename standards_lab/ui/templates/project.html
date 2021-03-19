@@ -157,7 +157,7 @@
 
   </div>
 
-  <div class="card mb-3">
+  <div class="card mb-3" id="test-project-data">
     <div class="card-body">
       <h2 class="card-title">Test</h2>
       <p>Test the project data with the configuration and schema. <a href="#DOCS#"><i>Project Test documentation.</i></a></p>
@@ -168,7 +168,7 @@
           <div v-show="spinner == 'test'" class="spinner-border m-2" role="status">
             <span class="sr-only">Loading...</span>
           </div>
-          <a class="mt-3 d-block" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="testResults">View Result Details</a>
+          <a class="mt-3 d-block" id="view-results-details" target="_blank" v-bind:href="projectCoveResultsUrl" v-if="testResults">View Result Details</a>
         </div>
 
         <div class="col">
