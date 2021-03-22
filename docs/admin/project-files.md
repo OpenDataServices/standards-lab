@@ -4,7 +4,7 @@ Projects are stored in a directory that is specified by setting `ROOT_PROJECTS_D
 
 The value of `ROOT_PROJECTS_DIR` must be created before using Standards Lab.
 
-The project directory includes, uploaded data, uploaded schema and the project's current settings.
+The project directory includes: uploaded data, uploaded schema, and the project's current settings.
 
 ## Management of files
 

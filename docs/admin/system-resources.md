@@ -1,8 +1,8 @@
 # System Resources
 
-The system resources required depend on the number of users, the size of the schema and the size of the data to be tested.
+The system resources required depend on the number of users, the size of the schema, and the size of the data to be tested.
 
-Typically large data requires more memory and more than one concurrent users requires more CPU.
+Typically large dataset requires more memory, and more than one concurrent user requires more CPU.
 
 ## Recommended minimum system specifications
 

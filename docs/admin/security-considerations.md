@@ -4,9 +4,9 @@ Standards Lab allows users to upload arbitrary data and schema to the specified 
 
 ## Considerations
 
-When thinking about the security implications consider mitigations such as:
+When thinking about the security implications, consider mitigations such as:
 
-- Adding HTTP authentication to restrict to trusted users
+- Adding HTTP authentication to restrict access to trusted users
 - Adding an SSL certificate to the server so that data is transmitted more securely
 - Using Standards Lab as a local application that is only available to the localhost
 - Isolating any deployment by using containers and virtualisation
