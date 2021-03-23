@@ -18,14 +18,14 @@
 
 <script type="text/x-template" id="project">
 <div class="container">
-  <h1 class="text-right m-2">Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
+  <h1 class="text-right mt-3 mb-4">Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
 
   <div class="card mb-3">
     <div class="card-body">
       <h2 class="card-title">Project Settings</h2>
-      <p>Project settings show you the current status of the standards project, as well as any settings which affect the way in which the data and schema being developed interact. <a href="#DOCS#"><i>Project Settings documentation.</i></a></p>
+      <p>Settings affect the way in which the data and schema being developed interact. <a href="#DOCS#"><i>Project Settings documentation.</i></a></p>
       <p>Owner: <code>{{ownThisProject}}</code><br />
-      Modified: <code>{{project.modified}}</code></p>
+      <template v-if="project.modified">Modified: <code>{{project.modified}}</code></template></p>
       <div class="form-group">
         <label for="project-name-input">Name</label>
         <input type="text" id="project-name-input" class="form-control form-control-lg" style="width: 100%" v-model="project.name" v-on:keyup="unsavedChanges = true" >
@@ -37,7 +37,7 @@
         <small class="d-block">Setting as editable by anyone allows anyone with the link to this project to make any changes.</small>
       </div>
       <div class="form-group">
-        <label for="project-root-list-path">Top level key to the list of your data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
+        <label for="project-root-list-path">Top-level key name for the list of the data <a href="https://os4d.opendataservices.coop/patterns/schema/#pattern-top">(?)</a></label>
         <input type="text" class="form-control" id="project-root-list-path" v-model="project.rootListPath" v-on:keyup="unsavedChanges = true"/>
         <small>When using spreadsheet data upload this is used as the top level key name to store the rows under.</small>
       </div>
@@ -55,12 +55,12 @@
     <div class="card-body">
       <!-- Schema section -->
       <h2 class="card-title">Schema</h2>
-      <p>Schema JSON can be uploaded and edited directly. The schema must conform to <a href="https://json-schema.org/">JSON Schema specifications</a>. Once saved or uploaded the schema will be used to Test any data provided. <a href="#DOCS#"><i>Project Schema documentation.</i></a></p>
+      <p>Upload and edit JSON schema files for testing the data. The schema must conform to the <a href="https://json-schema.org/">JSON Schema specifications</a>. Once saved or uploaded the schema will be used to Test any data provided. <a href="#DOCS#"><i>Project Schema documentation.</i></a></p>
       <div class="row">
 
         <div class="col">
           <div class="form-group">
-            <label for="form-control-file-schema">Schema upload</label>
+            <label for="form-control-file-schema">Upload schema file</label>
             <input type="file" id="form-control-file-schema" class="form-control-file" accept="application/json" data-upload-type="schema" v-on:change="uploadProjectData">
             <div v-show="spinner == 'schema'" class="spinner-border m-2" role="status">
               <span class="sr-only">Loading...</span>
@@ -68,8 +68,8 @@
           </div>
         </div>
 
-        <div class="col" id="current-schema-files">
-          Current schema files:
+        <div class="col" id="current-schema-files" v-if="project.schemaFiles && project.schemaFiles.length">
+          Choose a file to edit
           <div class="btn-group m-1" v-for="file in project.schemaFiles">
             <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorSchema')">
               {{file}}
@@ -94,7 +94,7 @@
       </div> <!-- / row/ schema section -->
 
       <div class="form-group">
-        <label class="input-group" for="schema-open">File Open:</label>
+        <label class="input-group" for="schema-open">File open</label>
         <input id="schema-open" type="text" class="form-control" v-model="jsonEditorSchemaFileName" />
       </div>
 
@@ -110,13 +110,13 @@
     </button>
     <div class="card-body">
       <h2 class="card-title">Data</h2>
-      <p>Data can be uploaded to the project. Data can be in CSV format (<code>.csv</code>), JSON format (<code>.json</code>), Microsoft Excel (<code>.xls</code> and <code>.xlsx</code>) or Open spreadsheet format (<code>.ods</code>). Editing in the browser can be done on CSV and JSON files. <i><a href="#DOCS#">Project Data documentation.</a></i></p>
+      <p>Upload data for testing. Supported formats: Comma-Separated Values (<code>.csv</code>), JSON (<code>.json</code>), Microsoft Excel (<code>.xls</code> and <code>.xlsx</code>) or Open spreadsheet format (<code>.ods</code>). Editing is supported for CSV and JSON files after uploading. <i><a href="#DOCS#">Project Data documentation.</a></i></p>
 
       <div class="row">
 
         <div class="col">
           <div class="form-group">
-            <label for="form-control-file-data">Data upload</label>
+            <label for="form-control-file-data">Upload data</label>
             <input type="file" id="form-control-file-data" class="form-control-file" accept="*.csv, *.ods, *.json, *.xlsx, *.xls" data-upload-type="data" v-on:change="uploadProjectData">
             <div v-show="spinner == 'data'" class="spinner-border m-2" role="status">
               <span class="sr-only">Loading...</span>
@@ -124,8 +124,8 @@
           </div>
         </div>
 
-        <div class="col">
-          Current data files:
+        <div class="col" v-if="project.dataFiles && project.dataFiles.length">
+          Choose a file to edit:
           <div class="btn-group m-1" v-for="file in project.dataFiles">
             <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorData')">
               {{file}}
@@ -145,7 +145,7 @@
       </div> <!--/  row-->
 
       <div class="form-group">
-        <label for="data-open">File Open:</label>
+        <label for="data-open">File open</label>
          <input type="text" class="form-control" id="data-open" v-model="jsonEditorDataFileName" />
       </div>
 

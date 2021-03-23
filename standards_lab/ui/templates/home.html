@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block title %}Home |{% endblock %}
 {% block content %}
-<div class="container mt-2">
-  <h1>Welcome to Open Standards Lab</h1>
+<div class="container mt-3">
+  <h1 class="mb-3 text-right">Open Standards Lab</h1>
 
-  <p>Open Standards Lab helps you to develop standards and improve the quality of Open Data.
-     Please see the <a href="{% url "ui:about" %}">About</a> pages and <a href="https://standards-lab.readthedocs.io/en/latest/">Documentation</a>
-     for more information.</p>
-  <p>Select from available projects {% if EDIT_MODE %}or create a new project{% endif %}.</p>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p>Open Standards Lab is a tool to help you to develop JSON schema and improve the quality of open data. You can:</p>
+      <ul>
+        <li>Upload and edit JSON schema files</li>
+        <li>Upload and edit data in multiple formats</li>
+        <li>Test data using your schema</li>
+      </ul>
+      <p>Note: All projects, data and schema is visible to all users.</p>
+    </div>
+  </div>
+
 
   {% if projects %}
   <div class="card mb-4">
     <div class="card-body">
-      <h5 class="card-title">Available Projects</h5>
-      <p>All projects are accessible to anyone using this system.</p>
+      <h5 class="card-title">Open An Existing Project</h5>
       <div style="max-height: 20vh; overflow-y: auto;">
         <div style="column-count: 6;">
           <ul>
@@ -31,7 +38,7 @@
   <div class="card">
     <div class="card-body">
 
-    <h5 class="card-title">Create new project</h5>
+    <h5 class="card-title">Create A New Project</h5>
 
   <div class="form-group">
     <label for="new-project" class="mr-3">Project name</label>
