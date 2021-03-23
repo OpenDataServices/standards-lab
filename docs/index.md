@@ -1,68 +1,9 @@
-Open Data Services Sphinx Base
+Open Standards Lab
 ==============================
 
+A web tool for users and creators of open standards.
 
-## Examples
-
-Table without horizonal scrollbar:
-
-```eval_rst
-.. list-table::
-    :header-rows: 1
-    :widths: 1 3 1 1
-
-    * - A
-      - B
-      - C
-      - D
-    * - Lorem
-      - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec dictum urna non purus tristique pharetra.
-      - Yes
-      - False
-    * - Ipsum
-      - Mauris et lobortis nibh. Nullam vitae velit turpis. Vestibulum facilisis sit amet sapien nec maximus.
-      - No
-      - True
-    * - Dolor
-      - Pellentesque sit amet sapien tincidunt, fringilla dui id, porttitor purus. Nam tincidunt ac ex id porttitor. Praesent varius lectus nisl, ac luctus erat lacinia vitae.
-      - Yes
-      - True
-```
-
-### Markdown reference links
-
-Link to [a ref](a-ref).
-
-
-```eval_rst
-.. _a-ref:
-```
-#### Referenced section
-
-# Markdown inside an admonition
-
-```eval_rst
-.. admonition:: Admonition
-    :class: hint
-
-    .. markdown::
-
-        Some markdown [a URL](http://example.org), `single backtick literals`.
-```
-
-(from <https://sphinxcontrib-opendataservices.readthedocs.io/en/latest/misc/>)
-
-# JSONSchema
-
-```eval_rst
-.. jsonschema:: _static/example_schema.json
-```
-
-# JSONSchema with docson
-
-<script src="_static/docson/widget.js" data-schema="../../_static/example_schema.json"></script>
-
-For more examples see <https://sphinxcontrib-opendataservices.readthedocs.io/en/latest/jsonschema/>
+[Getting started](https://github.com/OpenDataServices/standards-lab/blob/main/README.md)
 
 ## Contents
 
@@ -70,9 +11,19 @@ For more examples see <https://sphinxcontrib-opendataservices.readthedocs.io/en/
 .. toctree::
    :maxdepth: 2
 
+   user/project
+
+   admin/getting-started
+   admin/ods-dokku
+   admin/process-management
+   admin/project-files
+   admin/security-considerations
+   admin/system-resources
+
    developer/coding-style
-   developer/contributing    
+   developer/contributing
    developer/core-components
    developer/dependencies
+   developer/tests
 
 ```
