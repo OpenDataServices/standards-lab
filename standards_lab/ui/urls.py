@@ -1,5 +1,4 @@
 from django.urls import path
-from django.views.generic.base import TemplateView
 
 import ui.views
 from ui.apps import UiConfig
@@ -14,5 +13,5 @@ urlpatterns = [
         ui.views.CoveResults.as_view(),
         name="cove-results",
     ),
-    path("about", TemplateView.as_view(template_name="about.html"), name="about"),
+    path("about", ui.views.About.as_view(template_name="about.html"), name="about"),
 ]

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}About |{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h1 class="mb-3 text-right">Open Standards Lab</h1>
+
+  {% include "about_top.html" %}
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Who?</h5>
+      <p>Built by <a href="http://opendataservices.coop/">Open Data Services Co-operative</a> with funding from the <a href="https://theodi.org/">ODI (Open Data Institute)</a>.</p>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Technical</h5>
+      <p>Git revision: <a href="https://github.com/OpenDataServices/standards-lab/tree/{{ git_rev }}">{{ git_rev }}</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
