@@ -1,4 +1,5 @@
 import os
+import subprocess
 import processor.cove
 from django.conf import settings
 from django.http import Http404
@@ -13,6 +14,23 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["projects"] = os.listdir(settings.ROOT_PROJECTS_DIR)
+        return context
+
+
+class About(TemplateView):
+    template_name = "about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Not critical if this fails e.g. git not installed
+        try:
+            context["git_rev"] = subprocess.check_output(
+                ["git show --format=format:%h  --no-patch"], shell=True
+            ).decode()
+        except Exception:
+            pass
+
         return context
 
 
