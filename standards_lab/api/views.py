@@ -121,14 +121,19 @@ class ProjectConfig(View):
 
         try:
             os.remove(path)
+        except FileNotFoundError:
+            pass
+
+        try:
             project[upload_type_key].remove(file_info["fileName"])
 
             if project["rootSchema"] == file_info["fileName"]:
                 del project["rootSchema"]
 
-            save_project(project)
-        except (FileNotFoundError, KeyError):
-            return FAILED("File does not exist")
+        except (KeyError, ValueError):
+            pass
+
+        save_project(project)
 
         return OK(project)
 
