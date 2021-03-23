@@ -60,7 +60,7 @@ class BrowserTests(StaticLiveServerTestCase):
     def test_homepage(self):
         self.get("/")
 
-        self.assertIn("Welcome to Open Standards Lab", self.driver.page_source)
+        self.assertIn("Open Standards Lab", self.driver.page_source)
 
     def test_create_new_project(self):
         self.get("/")
@@ -89,20 +89,21 @@ class BrowserTests(StaticLiveServerTestCase):
             "rgba(204, 51, 13, 1)", accepted_chars.value_of_css_property("color")
         )
 
-    def test_available_projects_homepage(self):
+    def test_exisiting_projects_homepage(self):
         self.get("/")
+        target_string = "Existing Project"
 
         body_text = self.driver.find_element_by_tag_name("body").text
 
-        # "Available Projects" only appear when there are projects.
-        self.assertNotIn("Available Projects", body_text)
+        # "Existing Projects" only appear when there are projects.
+        self.assertNotIn(target_string, body_text)
 
         self.create_new_project("new_project_bar")
         self.driver.set_page_load_timeout(15)
         self.get("/")
         body_text = self.driver.find_element_by_tag_name("body").text
 
-        self.assertIn("Available Projects", body_text)
+        self.assertIn(target_string, body_text)
         self.assertIn("new_project_bar", body_text)
 
     # -------------
