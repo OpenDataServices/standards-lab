@@ -168,6 +168,7 @@ def start(project):
             project,
             data_file,
             job_id=job_id,
+            result_ttl=2 * 60 * 60,
         )
         output[data_file] = {"status": "SUCCESS"}
     return output
