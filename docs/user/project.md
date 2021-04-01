@@ -93,7 +93,7 @@ Changes in the editor are only saved once the "Save Schema" button is pressed.
 
 Edit a new file by setting the file name using the "File open" text entry. This is set to "untitled.json" by default.
 
-Edit existing files use the Upload data button. Supported formats: Comma-Separated Values (.csv), JSON (.json), Microsoft Excel (.xls and .xlsx) or Open spreadsheet format (.ods).
+Edit existing files use the Upload data button. Supported formats: Comma-Separated Values (.csv), JSON (.json), Microsoft Excel (.xlsx) or Open spreadsheet format (.ods).
 
 Editing is supported for JSON files and CSV files.
 
