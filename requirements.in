@@ -9,3 +9,4 @@ django-redis==4.12.*
 # For production
 gunicorn
 whitenoise
+sentry-sdk
