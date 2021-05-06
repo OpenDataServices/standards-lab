@@ -28,7 +28,7 @@ def FAILED(error):
 
 
 def save_project(project):
-    """ Save the current project to the settings file """
+    """Save the current project to the settings file"""
 
     project["modified"] = timezone.now().isoformat(timespec="minutes")
 
@@ -63,7 +63,7 @@ def edit_mode(func):
 
 
 class ProjectConfig(View):
-    """ GET returns the project config and POST updates the config """
+    """GET returns the project config and POST updates the config"""
 
     def get(self, request, *args, **kwargs):
         try:

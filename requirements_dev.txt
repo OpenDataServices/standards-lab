@@ -8,16 +8,22 @@
     # via -r requirements.in
 appdirs==1.4.4
     # via black
-attrs==20.3.0
+attrs==21.1.0
     # via jsonschema
-black==20.8b1
+backports-datetime-fromisoformat==1.0.0
+    # via flattentool
+black==21.5b0
     # via -r requirements_dev.in
+btrees==4.8.0
+    # via zodb
 cached-property==1.5.2
     # via libcove
 certifi==2020.12.5
     # via
     #   requests
     #   sentry-sdk
+cffi==1.14.5
+    # via persistent
 chardet==4.0.0
     # via requests
 chromedriver-autoinstaller==0.2.2
@@ -37,9 +43,9 @@ coveralls==3.0.1
     # via -r requirements_dev.in
 dealer==2.1.0
     # via libcoveweb
-defusedxml==0.6.0
+defusedxml==0.7.1
     # via odfpy
-django-bootstrap3==14.2.0
+django-bootstrap3==15.0.0
     # via libcoveweb
 django-environ==0.4.5
     # via
@@ -49,7 +55,7 @@ django-redis==4.12.1
     # via -r requirements.in
 django-rq==2.4.0
     # via -r requirements.in
-django==2.2.19
+django==2.2.22
     # via
     #   -r requirements.in
     #   django-bootstrap3
@@ -58,20 +64,20 @@ django==2.2.19
     #   libcoveweb
 docopt==0.6.2
     # via coveralls
-et-xmlfile==1.0.1
+et-xmlfile==1.1.0
     # via openpyxl
-flake8==3.8.4
+flake8==3.9.1
     # via -r requirements_dev.in
-flattentool==0.15.3
+flattentool==0.17.0
     # via
     #   libcove
     #   libcoveweb
-gunicorn==20.0.4
+gunicorn==20.1.0
     # via -r requirements.in
 idna==2.10
     # via requests
-jdcal==1.4.1
-    # via openpyxl
+ijson==3.1.4
+    # via flattentool
 json-merge-patch==0.2
     # via libcove
 jsonref==0.2
@@ -84,7 +90,7 @@ libcove==0.20.2
     # via
     #   -r requirements.in
     #   libcoveweb
-lxml==4.6.2
+lxml==4.6.3
     # via flattentool
 mccabe==0.6.1
     # via flake8
@@ -92,15 +98,23 @@ mypy-extensions==0.4.3
     # via black
 odfpy==1.4.1
     # via flattentool
-openpyxl==2.6.4
+openpyxl==3.0.7
     # via flattentool
 pathspec==0.8.1
     # via black
-pip-tools==5.5.0
+pep517==0.10.0
+    # via pip-tools
+persistent==4.7.0
+    # via
+    #   btrees
+    #   zodb
+pip-tools==6.1.0
     # via -r requirements.in
-pycodestyle==2.6.0
+pycodestyle==2.7.0
     # via flake8
-pyflakes==2.2.0
+pycparser==2.20
+    # via cffi
+pyflakes==2.3.1
     # via flake8
 pyrsistent==0.17.3
     # via jsonschema
@@ -113,7 +127,7 @@ redis==3.5.3
     #   django-redis
     #   django-rq
     #   rq
-regex==2020.11.13
+regex==2021.4.4
     # via black
 requests==2.25.1
     # via
@@ -122,31 +136,33 @@ requests==2.25.1
     #   libcoveweb
 rfc3987==1.3.8
     # via libcove
-rq==1.7.0
+rq==1.8.0
     # via django-rq
 schema==0.7.4
     # via flattentool
 selenium==3.141.0
     # via -r requirements_dev.in
-sentry-sdk==0.20.3
+sentry-sdk==1.0.0
     # via
     #   -r requirements.in
     #   libcoveweb
-six==1.15.0
-    # via jsonschema
+six==1.16.0
+    # via
+    #   jsonschema
+    #   zodb
 sqlparse==0.4.1
     # via django
 strict-rfc3339==0.7
     # via libcove
 toml==0.10.2
-    # via black
-typed-ast==1.4.2
-    # via black
-typing-extensions==3.7.4.3
-    # via black
+    # via
+    #   black
+    #   pep517
+transaction==3.0.1
+    # via zodb
 uc-rfc6266-parser==0.1.0
     # via libcoveweb
-urllib3==1.26.3
+urllib3==1.26.4
     # via
     #   requests
     #   selenium
@@ -157,6 +173,25 @@ whitenoise==5.2.0
     # via -r requirements.in
 xmltodict==0.12.0
     # via flattentool
+zc.lockfile==2.0
+    # via zodb
+zc.zlibstorage==1.2.0
+    # via flattentool
+zconfig==3.5.0
+    # via zodb
+zodb==5.6.0
+    # via
+    #   flattentool
+    #   zc.zlibstorage
+zodbpickle==2.0.0
+    # via zodb
+zope.interface==5.4.0
+    # via
+    #   btrees
+    #   persistent
+    #   transaction
+    #   zc.zlibstorage
+    #   zodb
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
