@@ -16,7 +16,7 @@ chromedriver_autoinstaller.install()
 
 @override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test", DEBUG=True)
 class BrowserTests(StaticLiveServerTestCase):
-    """ Browser test using latest Chrome/Chromium stable"""
+    """Browser test using latest Chrome/Chromium stable"""
 
     def __init__(self, *args, **kwargs):
         os.makedirs("/tmp/standards-lab-test", exist_ok=True)

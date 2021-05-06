@@ -5,7 +5,7 @@ import json
 
 
 def get_project_config(project_name, json_format=False):
-    """ Returns the specified project config, optionally in json format """
+    """Returns the specified project config, optionally in json format"""
 
     project = cache.get(project_name)
     if project:
