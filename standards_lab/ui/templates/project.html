@@ -82,7 +82,7 @@
             </button>
 
             <div class="dropdown-menu">
-              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + file + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
+              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + encodeURIComponent(file) + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
               <a v-if="ownThisProject && project.schemaFiles.length > 1 && project.rootSchema != file" class="dropdown-item" href="#" v-on:click.prevent="project.rootSchema = file; updateProjectProperties()" v-bind:title="'Set Root Schema '+file" >
                 Set as Root Schema
               </a>
@@ -136,7 +136,7 @@
             </button>
 
             <div class="dropdown-menu">
-              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + file + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
+              <a class="dropdown-item" target="_blank" v-bind:href="projectApiUrl + '/download/' + encodeURIComponent(file) + '?attach=true' " v-bind:title="'Download '+file" >Download</a>
               <a v-if="ownThisProject" class="dropdown-item text-danger" href="#" v-on:click.prevent="deleteProjectData(file, 'data')" v-bind:title="'Delete '+file" >Delete</a>
             </div>
           </div>
@@ -384,7 +384,7 @@
       /* destination: the widget / place to send the downloaded data */
       downloadFile: function(fileName, destination){
 
-        fetch(projectApiUrl + '/download/' + fileName).then(response => {
+        fetch(projectApiUrl + '/download/' + encodeURIComponent(fileName)).then(response => {
           /* json data */
           if (response.headers.get("content-type") == "application/json"){
             response.json().then(result => {
