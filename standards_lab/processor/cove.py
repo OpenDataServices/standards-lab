@@ -16,6 +16,7 @@ import django_rq
 import jsonref
 from rq.job import Job
 from rq.exceptions import NoSuchJobError
+from sentry_sdk import capture_exception
 
 import api.views
 from .extra_validator_funcs import patch_validator
@@ -45,105 +46,121 @@ def lib_cove_wrapper(
     conversion on its own beforehand.
 
     """
+    try:
+        schema_name = project["rootSchema"]
+        root_list_path = project.get("rootListPath", "")
 
-    schema_name = project["rootSchema"]
-    root_list_path = project.get("rootListPath", "")
+        schema_obj = SchemaJsonMixin()
 
-    schema_obj = SchemaJsonMixin()
+        schema_obj.schema_host = os.path.join(project["path"], "")
+        # Don't set schema_obj.schema_name or schema_obj.schema_url, because these
+        # are only used by flatten-tool, which requires a specific subschema, see
+        # comment above flattentool_schema_url below.
+        schema_obj.pkg_schema_name = schema_name
+        schema_obj.pkg_schema_url = urljoin(
+            schema_obj.schema_host, schema_obj.pkg_schema_name
+        )
 
-    schema_obj.schema_host = os.path.join(project["path"], "")
-    # Don't set schema_obj.schema_name or schema_obj.schema_url, because these
-    # are only used by flatten-tool, which requires a specific subschema, see
-    # comment above flattentool_schema_url below.
-    schema_obj.pkg_schema_name = schema_name
-    schema_obj.pkg_schema_url = urljoin(
-        schema_obj.schema_host, schema_obj.pkg_schema_name
-    )
+        data_file_path = os.path.join(project["path"], data_file)
+        mime_type = api.views.check_allowed_project_mime_type(data_file_path)
+        file_type = MIME_TYPE_TO_FILE_TYPE.get(mime_type, "json")
+        context = {"file_type": file_type}
 
-    data_file_path = os.path.join(project["path"], data_file)
-    mime_type = api.views.check_allowed_project_mime_type(data_file_path)
-    file_type = MIME_TYPE_TO_FILE_TYPE.get(mime_type, "json")
-    context = {"file_type": file_type}
+        # Only used for constructing the converted url, which currently wouldn't
+        # work in standards-lab anyway, as the converted file isn't placed anywhere
+        # web accessiable
+        upload_url = "http://example.org/"
 
-    # Only used for constructing the converted url, which currently wouldn't
-    # work in standards-lab anyway, as the converted file isn't placed anywhere
-    # web accessiable
-    upload_url = "http://example.org/"
+        lib_cove_config = LibCoveConfig()
+        lib_cove_config.config["root_list_path"] = root_list_path
+        # This is the name of an extra id at the top level, e.g. ocds has ocid. An
+        # empty string means no such id
+        lib_cove_config.config["root_id"] = ""
 
-    lib_cove_config = LibCoveConfig()
-    lib_cove_config.config["root_list_path"] = root_list_path
-    # This is the name of an extra id at the top level, e.g. ocds has ocid. An
-    # empty string means no such id
-    lib_cove_config.config["root_id"] = ""
+        # upload_dir is only used to output files to (e.g. cell source map from
+        # flatten-tool, or a cache of the validation results), so we don't have to
+        # set it to where the standards-lab data was uploaded
+        with tempfile.TemporaryDirectory() as upload_dir:
+            # flatten-tool takes a schema url or path, but it expects the
+            # sub-schema describing the repeated object, not the package schema.
+            # e.g. the schema describing a grant in 360Giving or a release in OCDS.
+            #
+            # For the existing standards we work on, this is a seperate file which
+            # we can point flatten-tool at. But, in standards-lab we don't know
+            # which schema file it is, or whether the schema files are even split
+            # this way. Instead, we deref to combine all the schemas, and find the
+            # sub-schema we want from the package schema, write that out to a file,
+            # and pass it to flatten-tool.
+            flattentool_schema_url = os.path.join(upload_dir, "flattentool_schema.json")
 
-    # upload_dir is only used to output files to (e.g. cell source map from
-    # flatten-tool, or a cache of the validation results), so we don't have to
-    # set it to where the standards-lab data was uploaded
-    with tempfile.TemporaryDirectory() as upload_dir:
-        # flatten-tool takes a schema url or path, but it expects the
-        # sub-schema describing the repeated object, not the package schema.
-        # e.g. the schema describing a grant in 360Giving or a release in OCDS.
-        #
-        # For the existing standards we work on, this is a seperate file which
-        # we can point flatten-tool at. But, in standards-lab we don't know
-        # which schema file it is, or whether the schema files are even split
-        # this way. Instead, we deref to combine all the schemas, and find the
-        # sub-schema we want from the package schema, write that out to a file,
-        # and pass it to flatten-tool.
-        flattentool_schema_url = os.path.join(upload_dir, "flattentool_schema.json")
+            with open(schema_obj.pkg_schema_url) as schema_fp, open(
+                flattentool_schema_url, "w"
+            ) as flattentool_schema_fp:
+                schema = jsonref.load(schema_fp)
+                flattentool_schema = (
+                    schema.get("properties", {})
+                    .get(root_list_path, {})
+                    .get("items", {})
+                )
+                json.dump(flattentool_schema, flattentool_schema_fp)
 
-        with open(schema_obj.pkg_schema_url) as schema_fp, open(
-            flattentool_schema_url, "w"
-        ) as flattentool_schema_fp:
-            schema = jsonref.load(schema_fp)
-            flattentool_schema = (
-                schema.get("properties", {}).get(root_list_path, {}).get("items", {})
-            )
-            json.dump(flattentool_schema, flattentool_schema_fp)
+            if file_type != "json":
+                context.update(
+                    convert_spreadsheet(
+                        upload_dir,
+                        upload_url,
+                        data_file_path,
+                        file_type,
+                        lib_cove_config,
+                        schema_url=flattentool_schema_url,
+                        pkg_schema_url=schema_obj.pkg_schema_url,
+                        metatab_name="Meta",
+                        replace=True,
+                        cache=False,
+                    )
+                )
 
-        if file_type != "json":
-            context.update(
-                convert_spreadsheet(
+                json_file_path = context["converted_path"]
+
+            else:
+                json_file_path = data_file_path
+
+            with open(json_file_path) as fp:
+                try:
+                    json_data = json.load(fp, parse_float=Decimal)
+                except json.JSONDecodeError:
+                    context.update(
+                        {
+                            "status": "FAILED",
+                            "error": "Could not decode as a json file",
+                        }
+                    )
+                    return context
+
+                context = common_checks_context(
                     upload_dir,
-                    upload_url,
-                    data_file_path,
-                    file_type,
-                    lib_cove_config,
-                    schema_url=flattentool_schema_url,
-                    pkg_schema_url=schema_obj.pkg_schema_url,
-                    metatab_name="Meta",
-                    replace=True,
+                    json_data,
+                    schema_obj,
+                    schema_name,
+                    context,
                     cache=False,
                 )
-            )
-
-            json_file_path = context["converted_path"]
-
-        else:
-            json_file_path = data_file_path
-
-        with open(json_file_path) as fp:
-            try:
-                json_data = json.load(fp, parse_float=Decimal)
-            except json.JSONDecodeError:
-                context.update(
-                    {
-                        "status": "FAILED",
-                        "error": "Could not decode as a json file",
-                    }
-                )
-                return context
-
-            context = common_checks_context(
-                upload_dir,
-                json_data,
-                schema_obj,
-                schema_name,
-                context,
-                cache=False,
-            )
-    context["status"] = "SUCCESS"
-    return context
+        context["status"] = "SUCCESS"
+        return context
+    except Exception as e:
+        # It's not a good idea to show raw error messages to the user.
+        # They are hard to understand and may contain secret information.
+        # For this reason, the catch all here is "type(e)" and NOT "str(e)"
+        # Ideally catch common errors in more specific clauses above and return custom error messages.
+        context.update(
+            {
+                "status": "FAILED",
+                "error": "Exception: " + str(type(e)),
+            }
+        )
+        # Send to sentry, so we have useful info to debug later
+        capture_exception(e)
+        return context
 
 
 def start(project):
