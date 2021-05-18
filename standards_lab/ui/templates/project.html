@@ -182,6 +182,14 @@
     </div>
   </div>
 
+  <div class="card mb-3" v-if="ownThisProject">
+    <div class="card-body">
+      <h2 class="card-title">Danger Zone</h2>
+      <div class="">
+        <button class="btn btn-danger" v-on:click="deleteProject">Delete Whole Project</button>
+      </div>
+    </div>
+  </div>
 
   </div>
 
@@ -190,6 +198,7 @@
 {% endverbatim %}
 
 <script>
+  var standardsLabHomeUrl = "{% url "ui:home" %}";
   var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
   var projectFileApiRootUrl = "{% url "api:project-config" view.kwargs.project_name %}/file/";
   var projectCoveResultsUrl = "{% url "ui:cove-results" view.kwargs.project_name %}";
@@ -323,6 +332,24 @@
             alert(result.error);
           }
         });
+      },
+
+      /* Delete project */
+      deleteProject: function(){
+        if (confirm('Are you sure you want to delete ' +this.project.name+'? There is no undo.')) {
+          fetch(projectApiUrl, {
+            method:'DELETE',
+            credentials: 'same-origin',
+            headers: { 'X-CSRFToken': csrfmiddlewaretoken_value },
+            body: JSON.stringify(this.project),
+          }).then(response => {
+              if (response.ok) {
+                window.location.href = standardsLabHomeUrl;
+              } else {
+                alert("There was an error deleting the project");
+              }
+          });
+        }
       },
 
       /* Upload data to the project */

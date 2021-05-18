@@ -11,6 +11,7 @@ from django.core.cache import cache
 
 from utils.project import (
     get_project_config,
+    delete_project,
     PROJECT_SCHEMA_FILES_DIRECTORY,
     PROJECT_DATA_FILES_DIRECTORY,
 )
@@ -27,8 +28,10 @@ def OK(project):
     return JsonResponse(project)
 
 
-def FAILED(error):
-    return JsonResponse({"status": "FAILED", "error": error})
+def FAILED(error, status_code=500):
+    r = JsonResponse({"status": "FAILED", "error": error})
+    r.status_code = status_code
+    return r
 
 
 def save_project(project):
@@ -66,8 +69,19 @@ def edit_mode(func):
     return inner
 
 
+def project_owners_only(func):
+    def inner(self, request, *args, **kwargs):
+        if kwargs["name"] in request.session.get("projects_owned", []):
+            return func(self, request, *args, **kwargs)
+        else:
+            return FAILED("Sorry - No permissions", status_code=401)
+
+    return inner
+
+
 class ProjectConfig(View):
-    """GET returns the project config and POST updates the config."""
+    """GET returns the project config and POST updates the config.
+    DELETE deletes the whole project, with no undo."""
 
     def get(self, request, *args, **kwargs):
         try:
@@ -112,6 +126,13 @@ class ProjectConfig(View):
         save_project(project)
 
         return OK(project)
+
+    @edit_mode
+    @project_owners_only
+    def delete(self, *args, **kwargs):
+        delete_project(kwargs["name"])
+        self.request.session["projects_owned"].remove(kwargs["name"])
+        return OK({})
 
 
 class ProjectFile(View):
@@ -165,6 +186,7 @@ class ProjectFile(View):
             )
 
     @edit_mode
+    @project_owners_only
     def delete(self, *args, **kwargs):
         project = get_project_config(kwargs["name"])
         upload_type_key = "%sFiles" % kwargs["type"]
