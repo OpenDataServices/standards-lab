@@ -9,7 +9,11 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.cache import cache
 
-from utils.project import get_project_config
+from utils.project import (
+    get_project_config,
+    PROJECT_SCHEMA_FILES_DIRECTORY,
+    PROJECT_DATA_FILES_DIRECTORY,
+)
 
 import json
 import os
@@ -63,7 +67,9 @@ def edit_mode(func):
 
 
 class ProjectConfig(View):
-    """GET returns the project config and POST updates the config"""
+    """GET returns the project config and POST updates the config.
+    DELETE deletes a file from the project (note: does NOT delete the whole project)
+    """
 
     def get(self, request, *args, **kwargs):
         try:
@@ -115,8 +121,19 @@ class ProjectConfig(View):
         project = get_project_config(kwargs["name"])
         upload_type_key = "%sFiles" % file_info["uploadType"]
 
+        # We only allow these known upload types
+        if upload_type_key not in ["schemaFiles", "dataFiles"]:
+            return FAILED("Unknown upload type")
+
         path = os.path.join(
-            settings.ROOT_PROJECTS_DIR, project["name"], file_info["fileName"]
+            settings.ROOT_PROJECTS_DIR,
+            project["name"],
+            (
+                PROJECT_DATA_FILES_DIRECTORY
+                if file_info["uploadType"] == "data"
+                else PROJECT_SCHEMA_FILES_DIRECTORY
+            ),
+            file_info["fileName"],
         )
 
         try:
@@ -127,7 +144,10 @@ class ProjectConfig(View):
         try:
             project[upload_type_key].remove(file_info["fileName"])
 
-            if project["rootSchema"] == file_info["fileName"]:
+            if (
+                file_info["uploadType"] == "schema"
+                and project["rootSchema"] == file_info["fileName"]
+            ):
                 del project["rootSchema"]
 
         except (KeyError, ValueError):
@@ -140,15 +160,33 @@ class ProjectConfig(View):
 
 class ProjectDownloadFile(View):
     def get(self, request, *args, **kwargs):
+        type_of_file = kwargs["type"]
         project = get_project_config(kwargs["name"])
 
-        # Downloading is limited to files tracked in our project
-        if not kwargs["file_name"] in project.get("schemaFiles", []) + project.get(
-            "dataFiles", []
-        ):
+        if type_of_file == "data":
+            # Check user is requesting a data file that exists
+            if not kwargs["file_name"] in project.get("dataFiles", []):
+                raise Http404
+        elif type_of_file == "schema":
+            # Check user is requesting a schema file that exists
+            if not kwargs["file_name"] in project.get("schemaFiles", []):
+                raise Http404
+        else:
+            # This means the user is trying to request a type we don't recognise
             raise Http404
 
-        file_path = os.path.join(project["path"], kwargs["file_name"])
+        file_path = os.path.join(
+            project["path"],
+            (
+                PROJECT_DATA_FILES_DIRECTORY
+                if type_of_file == "data"
+                else PROJECT_SCHEMA_FILES_DIRECTORY
+            ),
+            kwargs["file_name"],
+        )
+
+        if not os.path.exists(file_path):
+            raise Http404
 
         mime_type = check_allowed_project_mime_type(file_path)
 
@@ -186,7 +224,26 @@ class ProjectUploadFile(View):
         if not settings.EDIT_MODE and upload_type_key == "schema":
             return FAILED("Sorry - not in edit mode")
 
-        file_destination = os.path.join(project["path"], request.FILES["file"].name)
+        file_destination_dir = os.path.join(
+            project["path"],
+            (
+                PROJECT_DATA_FILES_DIRECTORY
+                if upload_type_key == "dataFiles"
+                else PROJECT_SCHEMA_FILES_DIRECTORY
+            ),
+        )
+        if not os.path.exists(file_destination_dir):
+            os.mkdir(file_destination_dir)
+
+        file_destination = os.path.join(
+            project["path"],
+            (
+                PROJECT_DATA_FILES_DIRECTORY
+                if upload_type_key == "dataFiles"
+                else PROJECT_SCHEMA_FILES_DIRECTORY
+            ),
+            request.FILES["file"].name,
+        )
 
         with open(file_destination, "wb+") as destination_fp:
             for chunk in request.FILES["file"].chunks():
