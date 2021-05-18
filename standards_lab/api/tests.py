@@ -1,11 +1,9 @@
 from django.test import LiveServerTestCase
-from django.urls import URLPattern, reverse_lazy
 
 from utils.project import create_new_project, delete_project
 
 
 class ApiTests(LiveServerTestCase):
-
     def setUp(self):
         create_new_project("test", json_format=True)
 

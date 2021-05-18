@@ -14,6 +14,17 @@ In the top level directory run:
 $ ln -s ./pre-commit.sh ./.git/hooks/pre-commit
 ```
 
+### With docker
+
+Run the linting locally inside docker containers:
+
+```bash
+$ docker-compose run standards-lab-worker flake8 standards_lab/
+$ docker-compose run standards-lab-worker black standards_lab/ --check --diff
+```
+
+(Run `black` without the `--check` flag to make the changes.)
+
 ## Running tests locally
 
 Tests for the API, UI and processor are in their respective directories.

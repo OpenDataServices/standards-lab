@@ -43,7 +43,7 @@ class UrlsTests(LiveServerTestCase):
         delete_project("test")
 
     def test_url_responds(self):
-        """ Basic test to make sure all urls that accept GET requests return """
+        """Basic test to make sure all urls that accept GET requests return"""
         for path in root_urls:
             self._test_get_url(path)
 
