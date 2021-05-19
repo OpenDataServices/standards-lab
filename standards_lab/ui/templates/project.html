@@ -71,7 +71,7 @@
         <div class="col" id="current-schema-files" v-if="project.schemaFiles && project.schemaFiles.length">
           Choose a file to edit
           <div class="btn-group m-1" v-for="file in project.schemaFiles">
-            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorSchema')">
+            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'schema', 'jsonEditorSchema')">
               {{file}}
               <small v-if="project.rootSchema == file">(root)</small>
             </button>
@@ -127,7 +127,7 @@
         <div class="col" v-if="project.dataFiles && project.dataFiles.length">
           Choose a file to edit:
           <div class="btn-group m-1" v-for="file in project.dataFiles">
-            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'jsonEditorData')">
+            <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'data', 'jsonEditorData')">
               {{file}}
             </button>
 
@@ -382,9 +382,9 @@
       },
 
       /* destination: the widget / place to send the downloaded data */
-      downloadFile: function(fileName, destination){
+      downloadFile: function(fileName, type, destination){
 
-        fetch(projectApiUrl + '/download/' + encodeURIComponent(fileName)).then(response => {
+        fetch(projectApiUrl + '/download/' +  type + '/' + encodeURIComponent(fileName)).then(response => {
           /* json data */
           if (response.headers.get("content-type") == "application/json"){
             response.json().then(result => {

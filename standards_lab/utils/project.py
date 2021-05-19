@@ -3,6 +3,9 @@ from django.core.cache import cache
 import os
 import json
 
+PROJECT_DATA_FILES_DIRECTORY = "datasets"
+PROJECT_SCHEMA_FILES_DIRECTORY = "schemas"
+
 
 def get_project_config(project_name, json_format=False):
     """Returns the specified project config, optionally in json format"""
@@ -43,6 +46,17 @@ def create_new_project(project_name, json_format=False):
     ) as fp:
         json.dump(project, fp)
 
+    os.mkdir(
+        os.path.join(
+            settings.ROOT_PROJECTS_DIR, project_name, PROJECT_SCHEMA_FILES_DIRECTORY
+        )
+    )
+    os.mkdir(
+        os.path.join(
+            settings.ROOT_PROJECTS_DIR, project_name, PROJECT_DATA_FILES_DIRECTORY
+        )
+    )
+
     cache.set(project_name, project)
 
     if json_format:
@@ -60,13 +74,25 @@ def delete_project(project_name):
 
     if cache.has_key(project_name):
         cache.delete(project_name)
-    if os.path.exists(path):
-        try:
-            os.rmdir(path)
-        except OSError:
-            files = os.listdir(path)
+
+    # We don't use shutil.rmtree() because
+    # when we do https://github.com/OpenDataServices/standards-lab/issues/143 the Django file API has no equivalent,
+    # so we may as well set up the idea of looking for files and deleting individually now
+    dirs = [
+        os.path.join(path, PROJECT_DATA_FILES_DIRECTORY),
+        os.path.join(path, PROJECT_SCHEMA_FILES_DIRECTORY),
+        path,
+    ]
+    # Remove files in dirs, then the actial dir
+    for dir in dirs:
+        if os.path.isdir(dir):
+            files = os.listdir(dir)
             for file in files:
-                os.remove(os.path.join(path, file))
-            os.rmdir(path)
+                os.remove(os.path.join(dir, file))
+            os.rmdir(dir)
 
     return True
+
+
+class PathNotFoundForProjectFileException(Exception):
+    pass

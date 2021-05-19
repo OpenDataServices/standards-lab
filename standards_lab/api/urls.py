@@ -22,7 +22,7 @@ urlpatterns = [
         name="project-process",
     ),
     path(
-        "project/<slug:name>/download/<str:file_name>",
+        "project/<slug:name>/download/<str:type>/<str:file_name>",
         views.ProjectDownloadFile.as_view(),
         name="project-download",
     ),

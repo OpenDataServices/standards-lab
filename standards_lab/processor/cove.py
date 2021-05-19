@@ -20,6 +20,7 @@ from sentry_sdk import capture_exception
 
 import api.views
 from .extra_validator_funcs import patch_validator
+from utils.project import PROJECT_SCHEMA_FILES_DIRECTORY, PROJECT_DATA_FILES_DIRECTORY
 
 
 patch_validator(validator)
@@ -52,7 +53,9 @@ def lib_cove_wrapper(
 
         schema_obj = SchemaJsonMixin()
 
-        schema_obj.schema_host = os.path.join(project["path"], "")
+        schema_obj.schema_host = os.path.join(
+            project["path"], PROJECT_SCHEMA_FILES_DIRECTORY, ""
+        )
         # Don't set schema_obj.schema_name or schema_obj.schema_url, because these
         # are only used by flatten-tool, which requires a specific subschema, see
         # comment above flattentool_schema_url below.
@@ -61,7 +64,9 @@ def lib_cove_wrapper(
             schema_obj.schema_host, schema_obj.pkg_schema_name
         )
 
-        data_file_path = os.path.join(project["path"], data_file)
+        data_file_path = os.path.join(
+            project["path"], PROJECT_DATA_FILES_DIRECTORY, data_file
+        )
         mime_type = api.views.check_allowed_project_mime_type(data_file_path)
         file_type = MIME_TYPE_TO_FILE_TYPE.get(mime_type, "json")
         context = {"file_type": file_type}
