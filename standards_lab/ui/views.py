@@ -5,7 +5,9 @@ from django.conf import settings
 from django.http import Http404
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
-from utils.project import get_project_config, create_new_project
+from utils.project import get_project_config, create_new_project, delete_project
+from django.shortcuts import render, redirect
+from django.views import View
 
 
 class Home(TemplateView):
@@ -106,3 +108,67 @@ class CoveResults(TemplateView):
             return context
 
         return context
+
+
+class BaseSysAdmin(View):
+    def is_user_sysadmin(self, request):
+        # If no password configured, don't allow anyone any access
+        if not settings.SYSADMIN_PASSWORD:
+            return False
+
+        # Check password
+        return request.session.get("sysadminPassword") == settings.SYSADMIN_PASSWORD
+
+
+class SysAdmin(BaseSysAdmin):
+    def get(self, request, *args, **kwargs):
+        if not self.is_user_sysadmin(request):
+            return redirect("/sysadmin/login")
+
+        return render(request, "sysadmin.html")
+
+
+class SysAdminLogIn(BaseSysAdmin):
+    def get(self, request, *args, **kwargs):
+        if self.is_user_sysadmin(request):
+            return redirect("ui:sysadmin")
+
+        return render(request, "sysadmin_login.html")
+
+    def post(self, request, *args, **kwargs):
+        if self.is_user_sysadmin(request):
+            return redirect("ui:sysadmin")
+
+        if request.POST.get("password") == settings.SYSADMIN_PASSWORD:
+            request.session["sysadminPassword"] = settings.SYSADMIN_PASSWORD
+            return redirect("ui:sysadmin")
+        else:
+            return redirect("ui:sysadmin_login")
+
+
+class SysAdminLogOut(BaseSysAdmin):
+    def get(self, request, *args, **kwargs):
+        request.session["sysadminPassword"] = None
+        return redirect("ui:sysadmin_login")
+
+
+class SysAdminProjects(BaseSysAdmin):
+    def get(self, request, *args, **kwargs):
+        if not self.is_user_sysadmin(request):
+            return redirect("ui:sysadmin_login")
+
+        return render(
+            request,
+            "sysadmin_projects.html",
+            {"projects": os.listdir(settings.ROOT_PROJECTS_DIR)},
+        )
+
+    def post(self, request, *args, **kwargs):
+        if not self.is_user_sysadmin(request):
+            return redirect("ui:sysadmin_login")
+
+        for project_name in os.listdir(settings.ROOT_PROJECTS_DIR):
+            if request.POST.get("project_" + project_name) == "1":
+                delete_project(project_name)
+
+        return redirect("ui:sysadmin_projects")
