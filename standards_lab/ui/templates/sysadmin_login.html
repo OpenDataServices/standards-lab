@@ -1,0 +1,16 @@
+{% extends "sysadmin_base.html" %}
+{% block sysadmintitle %}Login{% endblock %}
+{% block sysadmincontent %}
+
+  <h1 class="mb-3 text-right">Login</h1>
+    <form method="post" action="#">
+        {% csrf_token %}
+        <label>
+            Password
+            <input type="password" name="password">
+        </label>
+        <input type="submit" value="Login">
+    </form>
+
+
+{% endblock %}

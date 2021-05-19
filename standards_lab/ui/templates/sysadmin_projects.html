@@ -1,0 +1,26 @@
+{% extends "sysadmin_base.html" %}
+{% block sysadmintitle %}Projects{% endblock %}
+{% block sysadmincontent %}
+
+  <h1 class="mb-3 text-right">Projects</h1>
+    <form action="#" method="post" onsubmit="return confirm('Are you sure you want to delete? There is no undo!');">
+        {% csrf_token %}
+        <table class="table">
+            <Tr>
+                <th>Project</th>
+            </Tr>
+            {% for project in projects %}
+                <tr>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="project_{{ project }}" value="1">
+                            {{ project }}
+                        </label>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Delete">
+    </form>
+
+{% endblock %}

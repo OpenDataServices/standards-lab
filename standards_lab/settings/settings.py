@@ -40,6 +40,7 @@ env = environ.Env(
     SECRET_KEY=(str, secret_key),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, "staticfiles")),
     SENTRY_DSN=(str, None),
+    SYSADMIN_PASSWORD=(str, None),
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -74,6 +75,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
+SYSADMIN_PASSWORD = env("SYSADMIN_PASSWORD")
 
 # Application definition
 

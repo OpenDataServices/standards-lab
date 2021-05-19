@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{% block sysadmintitle %}{% endblock %} | SysAdmin | {% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h1 class="mb-3 text-right">SysAdmin</h1>
+
+  <div class="text-right mb-5">
+    <a class="btn btn-primary" href="{% url 'ui:sysadmin' %}">Home</a>
+    <a class="btn btn-primary" href="{% url 'ui:sysadmin_projects' %}">Projects</a>
+    <a class="btn btn-primary" href="{% url 'ui:sysadmin_logout' %}">Logout</a>
+  </div>
+
+  {% block sysadmincontent %}{% endblock %}
+</div>
+{% endblock %}
