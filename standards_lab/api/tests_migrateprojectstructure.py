@@ -49,12 +49,12 @@ class MigrateProjectStructureTests(TestCase):
 
     def test_get_data(self):
         c = Client()
-        response = c.get("/api/project/testproj/download/data/data.json")
+        response = c.get("/api/project/testproj/file/data/data.json")
         self.assertEquals(200, response.status_code)
         self.assertIn("sunny", str(response.content))
 
     def test_get_schema(self):
         c = Client()
-        response = c.get("/api/project/testproj/download/schema/schema.json")
+        response = c.get("/api/project/testproj/file/schema/schema.json")
         self.assertEquals(200, response.status_code)
         self.assertIn("weather", str(response.content))

@@ -67,9 +67,7 @@ def edit_mode(func):
 
 
 class ProjectConfig(View):
-    """GET returns the project config and POST updates the config.
-    DELETE deletes a file from the project (note: does NOT delete the whole project)
-    """
+    """GET returns the project config and POST updates the config."""
 
     def get(self, request, *args, **kwargs):
         try:
@@ -115,50 +113,8 @@ class ProjectConfig(View):
 
         return OK(project)
 
-    @edit_mode
-    def delete(self, *args, **kwargs):
-        file_info = json.loads(self.request.body)
-        project = get_project_config(kwargs["name"])
-        upload_type_key = "%sFiles" % file_info["uploadType"]
 
-        # We only allow these known upload types
-        if upload_type_key not in ["schemaFiles", "dataFiles"]:
-            return FAILED("Unknown upload type")
-
-        path = os.path.join(
-            settings.ROOT_PROJECTS_DIR,
-            project["name"],
-            (
-                PROJECT_DATA_FILES_DIRECTORY
-                if file_info["uploadType"] == "data"
-                else PROJECT_SCHEMA_FILES_DIRECTORY
-            ),
-            file_info["fileName"],
-        )
-
-        try:
-            os.remove(path)
-        except FileNotFoundError:
-            pass
-
-        try:
-            project[upload_type_key].remove(file_info["fileName"])
-
-            if (
-                file_info["uploadType"] == "schema"
-                and project["rootSchema"] == file_info["fileName"]
-            ):
-                del project["rootSchema"]
-
-        except (KeyError, ValueError):
-            pass
-
-        save_project(project)
-
-        return OK(project)
-
-
-class ProjectDownloadFile(View):
+class ProjectFile(View):
     def get(self, request, *args, **kwargs):
         type_of_file = kwargs["type"]
         project = get_project_config(kwargs["name"])
@@ -207,6 +163,47 @@ class ProjectDownloadFile(View):
             return FAILED(
                 "Editing this file type in Standards Lab is not currently supported"
             )
+
+    @edit_mode
+    def delete(self, *args, **kwargs):
+        project = get_project_config(kwargs["name"])
+        upload_type_key = "%sFiles" % kwargs["type"]
+
+        # We only allow these known upload types
+        if upload_type_key not in ["schemaFiles", "dataFiles"]:
+            return FAILED("Unknown upload type")
+
+        path = os.path.join(
+            settings.ROOT_PROJECTS_DIR,
+            project["name"],
+            (
+                PROJECT_DATA_FILES_DIRECTORY
+                if upload_type_key == "dataFiles"
+                else PROJECT_SCHEMA_FILES_DIRECTORY
+            ),
+            kwargs["file_name"],
+        )
+
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
+
+        try:
+            project[upload_type_key].remove(kwargs["file_name"])
+
+            if (
+                upload_type_key == "schemaFiles"
+                and project["rootSchema"] == kwargs["file_name"]
+            ):
+                del project["rootSchema"]
+
+        except (KeyError, ValueError):
+            pass
+
+        save_project(project)
+
+        return OK(project)
 
 
 class ProjectUploadFile(View):
