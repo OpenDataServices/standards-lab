@@ -11,6 +11,6 @@ RUN sh -c 'cd standards_lab && python manage.py collectstatic'
 CMD sh -c ' \
     mkdir -p "$ROOT_PROJECTS_DIR" && \
     cd standards_lab && \
-    gunicorn --bind 0.0.0.0:80 wsgi:application \
+    gunicorn --bind 0.0.0.0:80 wsgi:application --reload \
     '
 EXPOSE 80

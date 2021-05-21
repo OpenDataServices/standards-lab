@@ -20,6 +20,6 @@ $ docker-compose up # (to restart)
 
 You'll need to rebuild the docker environment if you [add, remove, or upgrade the dependencies](dependencies.md).
 
-Restart the containers when you edit Python code for the changes to take effect (`docker-compose down` and `docker-compose up`).
+You don't need to rebuild or restart the containers when you edit any Python code. The changes will be detected and the server restarts automatically. 
 
 Read about [how to run the tests locally with docker](tests.md).

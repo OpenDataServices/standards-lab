@@ -1,0 +1,15 @@
+version: "3.5"
+
+services:
+
+  standards-lab-web:
+    environment:
+      DEBUG: 'True'
+    volumes:
+      - "./:/code"
+
+  standards-lab-worker:
+    environment:
+      DEBUG: 'True'
+    volumes:
+      - "./:/code"
