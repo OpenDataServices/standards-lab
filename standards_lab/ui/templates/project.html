@@ -191,6 +191,7 @@
 
 <script>
   var projectApiUrl = "{% url "api:project-config" view.kwargs.project_name %}";
+  var projectFileApiRootUrl = "{% url "api:project-config" view.kwargs.project_name %}/file/";
   var projectCoveResultsUrl = "{% url "ui:cove-results" view.kwargs.project_name %}";
   var csrfmiddlewaretoken_value = "{{ csrf_token }}";
   var initialProject = undefined;
@@ -384,7 +385,7 @@
       /* destination: the widget / place to send the downloaded data */
       downloadFile: function(fileName, type, destination){
 
-        fetch(projectApiUrl + '/download/' +  type + '/' + encodeURIComponent(fileName)).then(response => {
+        fetch(projectFileApiRootUrl + type + '/' + encodeURIComponent(fileName)).then(response => {
           /* json data */
           if (response.headers.get("content-type") == "application/json"){
             response.json().then(result => {
@@ -408,12 +409,11 @@
     },
 
     deleteProjectData: function(fileName, uploadType){
-      fetch(projectApiUrl, {
+      fetch(projectFileApiRootUrl + uploadType + '/' + encodeURIComponent(fileName), {
         method: "DELETE",
         headers: {
           'X-CSRFToken': csrfmiddlewaretoken_value,
         },
-        body: JSON.stringify({ fileName: fileName, uploadType: uploadType }),
       });
     },
 
