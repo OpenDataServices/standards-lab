@@ -14,6 +14,7 @@ A web tool for users and creators of open standards.
    user/project
 
    admin/getting-started
+   admin/dokku
    admin/ods-dokku
    admin/process-management
    admin/project-files
