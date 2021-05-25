@@ -26,5 +26,6 @@ A web tool for users and creators of open standards.
    developer/core-components
    developer/dependencies
    developer/tests
+   developer/docker
 
 ```
