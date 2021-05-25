@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <div class="col" v-if="project.dataFiles && project.dataFiles.length">
+        <div class="col" v-if="project.dataFiles && project.dataFiles.length" id="current-data-files">
           Choose a file to edit:
           <div class="btn-group m-1" v-for="file in project.dataFiles">
             <button class="btn btn-outline-secondary btn-sm" type="button" v-bind:title="'Open '+file" v-on:click.prevent="downloadFile(file, 'data', 'jsonEditorData')">
