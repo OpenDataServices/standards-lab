@@ -23,6 +23,10 @@
   <div>
     <ul class="nav nav-tabs">
       <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabWelcome">Welcome</a>
+        <a class="nav-link" href="#" v-else  v-on:click="selectTabWelcome">Welcome</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link active" href="#" v-if="currentTabSchema">Schema</a>
         <a class="nav-link" href="#" v-else  v-on:click="selectTabSchema">Schema</a>
       </li>
@@ -39,6 +43,45 @@
         <a class="nav-link" href="#" v-else v-on:click="selectTabSettings">Settings</a>
       </li>
     </ul>
+  </div>
+
+  <div class="card mb-3" v-show="currentTabWelcome">
+    <div class="card-body">
+      <h2 class="card-title">Welcome to Project {{ project.name }}</h2>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>JSON schema files define your standard. </p>
+          <p v-if="project.schemaFiles.length == 0">This project currently has no schema files - you must add some.</p>
+          <p v-else-if="project.schemaFiles.length == 1">This project has 1 schema file.</p>
+          <p v-else>This project has {{ project.schemaFiles.length }} schema files.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabSchema">View and edit schemas</button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>Upload and edit sample data in multiple formats.</p>
+          <p v-if="project.dataFiles.length == 0">This project currently has no data files - you must add some.</p>
+          <p v-else-if="project.dataFiles.length == 1">This project has 1 data file.</p>
+          <p v-else>This project has {{ project.dataFiles.length }} data files.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabData">View and edit data</button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>We will test your data files against your JSON Schema files and tell you about any errors. This will help you design the perfect data standard!</p>
+          <p v-if="project.schemaFiles.length == 0 && project.dataFiles.length == 0">You must add a schema and data file before trying this.</p>
+          <p v-else-if="project.schemaFiles.length == 0">You must add a schema file before trying this.</p>
+          <p v-else-if="project.dataFiles.length == 0">You must add a data file before trying this.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabTest">Run tests and view results</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="card mb-3" v-show="currentTabSettings">
@@ -256,7 +299,8 @@
         testResults: false,
         testResultsPollerTimer: undefined,
 
-        currentTabSchema: true,
+        currentTabWelcome: true,
+        currentTabSchema: false,
         currentTabData: false,
         currentTabTest: false,
         currentTabSettings: false,
@@ -518,7 +562,16 @@
       }
     },
 
+    selectTabWelcome: function() {
+      this.currentTabWelcome = true;
+      this.currentTabSchema = false;
+      this.currentTabData = false;
+      this.currentTabTest = false;
+      this.currentTabSettings = false;
+    },
+
     selectTabSchema: function() {
+      this.currentTabWelcome = false;
       this.currentTabSchema = true;
       this.currentTabData = false;
       this.currentTabTest = false;
@@ -526,6 +579,7 @@
     },
 
     selectTabData: function() {
+      this.currentTabWelcome = false;
       this.currentTabSchema = false;
       this.currentTabData = true;
       this.currentTabTest = false;
@@ -533,6 +587,7 @@
     },
 
     selectTabTest: function() {
+      this.currentTabWelcome = false;
       this.currentTabSchema = false;
       this.currentTabData = false;
       this.currentTabTest = true;
@@ -540,6 +595,7 @@
     },
 
     selectTabSettings: function() {
+      this.currentTabWelcome = false;
       this.currentTabSchema = false;
       this.currentTabData = false;
       this.currentTabTest = false;
