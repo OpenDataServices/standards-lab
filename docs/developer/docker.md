@@ -11,15 +11,15 @@ To see the logs (eg. in another console, or if you're running it in the backgrou
 If you make changes to either `Dockerfile` or `docker-compose.yml` you'll need to rebuild it locally to test it:
 
 ```
-$ docker-compose down # (if running)
-$ docker-compose build --no-cache
-$ docker-compose up # (to restart)
+$ docker-compose -f docker-compose.yml -f docker-compose.override.dev.yml down # (if running)
+$ docker-compose -f docker-compose.yml -f docker-compose.override.dev.yml build --no-cache
+$ docker-compose -f docker-compose.yml -f docker-compose.override.dev.yml up # (to restart)
 ```
 
 ## Updating the code
 
 You'll need to rebuild the docker environment if you [add, remove, or upgrade the dependencies](dependencies.md).
 
-Restart the containers when you edit Python code for the changes to take effect (`docker-compose down` and `docker-compose up`).
+If you edit Python code the changes should be reloaded automatically.
 
 Read about [how to run the tests locally with docker](tests.md).
