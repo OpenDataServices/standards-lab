@@ -23,3 +23,5 @@ To set up an app, run these commands on the Dokku server:
     dokku git:set $APP_NAME keep-git-dir true
 
 Now deploy the repository to Dokku in the usual way (a `git push` or `dokku git:sync` command).
+
+Optionally, add an SSL certificate by one of the usual ways. For example: https://github.com/dokku/dokku-letsencrypt
