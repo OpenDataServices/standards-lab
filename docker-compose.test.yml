@@ -1,0 +1,27 @@
+version: "3.5"
+
+services:
+
+  standards-lab-test-worker:
+    build: .
+    environment:
+      REDIS_URL: "redis://redis-test:6379"
+      ROOT_PROJECTS_DIR: /code/projects_dir_test/
+    volumes:
+      - "./:/code"
+    command: "sh -c 'cd standards_lab && python manage.py rqworker default'"
+
+  redis-test:
+    image: redis:6.0.10
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - ./_build/redis-test-data:/data
+
+  standards-lab-tester:
+    build: .
+    environment:
+      REDIS_URL: "redis://redis-test:6379"
+      ROOT_PROJECTS_DIR_TEST_VALUE: /code/projects_dir_test/
+    volumes:
+      - "./:/code"
+    command: "sh -c 'apt-get update && apt-get install -y chromium && standards_lab/manage.py test standards_lab'"

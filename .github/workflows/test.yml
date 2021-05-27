@@ -21,9 +21,15 @@ jobs:
         redis-version: 6
     - name: Collect static files
       run:  ./standards_lab/manage.py collectstatic
+    - name: Run worker
+      working-directory: ./standards_lab
+      run:  python manage.py rqworker default &
+      env:
+        ROOT_PROJECTS_DIR: "./projects_dir"
     - name: Run tests
       run: coverage run --source='./standards_lab' ./standards_lab/manage.py test ./standards_lab
-
+      env:
+        ROOT_PROJECTS_DIR_TEST_VALUE: "./projects_dir"
     - env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: coveralls --service=github

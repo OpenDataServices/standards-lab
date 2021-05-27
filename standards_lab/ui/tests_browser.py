@@ -1,4 +1,5 @@
 import os
+import time
 
 import chromedriver_autoinstaller
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -7,19 +8,26 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from utils.project import delete_project
 
 # Ensure the correct version of chromedriver is installed
 chromedriver_autoinstaller.install()
 
+ROOT_PROJECTS_DIR_VALUE = os.getenv(
+    "ROOT_PROJECTS_DIR_TEST_VALUE", "/tmp/standards-lab-test"
+)
 
-@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test", DEBUG=True)
+
+@override_settings(ROOT_PROJECTS_DIR=ROOT_PROJECTS_DIR_VALUE, DEBUG=True)
 class BrowserTests(StaticLiveServerTestCase):
     """Browser test using latest Chrome/Chromium stable"""
 
     def __init__(self, *args, **kwargs):
-        os.makedirs("/tmp/standards-lab-test", exist_ok=True)
+        os.makedirs(ROOT_PROJECTS_DIR_VALUE, exist_ok=True)
         super(BrowserTests, self).__init__(*args, **kwargs)
 
     def setUp(self, *args, **kwargs):
@@ -28,6 +36,7 @@ class BrowserTests(StaticLiveServerTestCase):
 
         chrome_options = Options()
         chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")
 
         self.driver = webdriver.Chrome(
             service_args=["--verbose", "--log-path=selenium.log"],
@@ -39,8 +48,8 @@ class BrowserTests(StaticLiveServerTestCase):
     def tearDown(self):
         self.driver.quit()
 
-        # remove projects from temporary folder.
-        for project in os.listdir("/tmp/standards-lab-test"):
+        # remove projects from folder.
+        for project in os.listdir(ROOT_PROJECTS_DIR_VALUE):
             delete_project(project) if project else None
 
     def get(self, url):
@@ -244,3 +253,62 @@ class BrowserTests(StaticLiveServerTestCase):
         json_editor = self.driver.find_element_by_class_name("ace-jsoneditor").text
 
         self.assertIn("grants", json_editor)
+
+    def start_project_test(self, project_name, schema_file, data_file):
+        # create new project
+        self.get("/")
+        self.create_new_project(project_name)
+
+        # upload schema file
+        schema_upload = self.driver.find_element_by_id("form-control-file-schema")
+        schema_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", schema_file)
+        )
+
+        time.sleep(5)
+
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_schema.json']"
+        ).click()
+        self.driver.find_element_by_xpath("//button[text()='Save Schema']").click()
+
+        # upload data file
+        data_upload = self.driver.find_element_by_id("form-control-file-data")
+        data_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", data_file)
+        )
+
+        time.sleep(5)
+
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_data.json']"
+        ).click()
+        self.driver.find_element_by_xpath("//button[text()='Save Data']").click()
+
+        # start test
+        self.driver.find_element_by_xpath("//button[text()='Start Test']").click()
+
+        # Tests can take a while to run
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "view-results-details"))
+        )
+
+    def test_project_data_test(self):
+        self.start_project_test("new_project_foo", "test_schema.json", "test_data.json")
+
+        self.assertIn(
+            "Test Results Summary",
+            self.driver.find_element_by_id("test-project-data").text,
+        )
+
+    def test_view_results_details_link(self):
+        self.start_project_test("new_project_foo", "test_schema.json", "test_data.json")
+
+        self.driver.find_element_by_id("view-results-details").click()
+
+        self.driver.switch_to.window(self.driver.window_handles[-1])
+
+        time.sleep(5)
+
+        heading = self.driver.find_element_by_xpath("//h4").text
+        self.assertEqual("Structural Errors", heading)
