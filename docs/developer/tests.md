@@ -18,14 +18,6 @@ $ ln -s ./pre-commit.sh ./.git/hooks/pre-commit
 
 Tests for the API, UI and processor are in their respective directories.
 
-### With docker
-
-To run the tests with a docker development setup:
-
-```bash
-$ docker-compose run standards-lab-worker standards_lab/manage.py test standards_lab
-```
-
 ### Locally
 
 To run the tests in your local virtual environment:
@@ -34,3 +26,7 @@ To run the tests in your local virtual environment:
 $ cd standards_lab
 $ python manage.py test
 ```
+
+### With Docker Compose
+
+[See the Docker page](docker.md)
