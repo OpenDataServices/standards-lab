@@ -121,6 +121,17 @@ class BrowserTests(StaticLiveServerTestCase):
             os.path.join(os.path.dirname(__file__), "fixtures", file_name)
         )
 
+    def create_new_project_and_upload_data_file(self, project_name, file_name):
+        # create new project
+        self.get("/")
+        self.create_new_project(project_name)
+
+        # upload data file
+        data_upload = self.driver.find_element_by_id("form-control-file-data")
+        data_upload.send_keys(
+            os.path.join(os.path.dirname(__file__), "fixtures", file_name)
+        )
+
     def test_project_settings_project_name_field(self):
         self.get("/")
         self.create_new_project("new_project_foo")
@@ -160,7 +171,7 @@ class BrowserTests(StaticLiveServerTestCase):
 
         self.assertEqual("test_schema.json", file_open)
 
-    def test_schema_json_tree(self):
+    def test_schema_json_editor(self):
         self.upload_schema_file("new_project_foo", "test_schema.json")
 
         json_tree = self.driver.find_element_by_class_name("jsoneditor-tree").text
@@ -187,3 +198,49 @@ class BrowserTests(StaticLiveServerTestCase):
 
         # click on "Save Schema" button
         self.driver.find_element_by_xpath("//button[text()='Save Schema']").click()
+
+    def test_upload_data_file(self):
+        self.create_new_project_and_upload_data_file(
+            "new_project_foo", "test_data.json"
+        )
+
+        data_files = self.driver.find_element_by_id("current-data-files").text
+
+        self.assertIn("test_data.json", data_files)
+
+    def test_data_file_open_field(self):
+        self.create_new_project_and_upload_data_file(
+            "new_project_foo", "test_data.json"
+        )
+
+        file_open = self.driver.find_element_by_id("data-open").get_attribute("value")
+
+        # by default it is "untitled.json"
+        self.assertEqual("untitled.json", file_open)
+
+        # click on data file
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_data.json']"
+        ).click()
+        file_open = self.driver.find_element_by_id("data-open").get_attribute("value")
+
+        self.assertEqual("test_data.json", file_open)
+
+    def test_data_json_editor(self):
+        self.create_new_project_and_upload_data_file(
+            "new_project_foo", "test_data.json"
+        )
+
+        json_editor = self.driver.find_element_by_class_name(
+            "jsoneditor-mode-code"
+        ).text
+
+        self.assertNotIn("grants", json_editor)
+
+        # click on data file
+        self.driver.find_element_by_xpath(
+            "//button[@title='Open test_data.json']"
+        ).click()
+        json_editor = self.driver.find_element_by_class_name("ace-jsoneditor").text
+
+        self.assertIn("grants", json_editor)
