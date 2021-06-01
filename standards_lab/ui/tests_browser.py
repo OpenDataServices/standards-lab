@@ -13,13 +13,15 @@ from utils.project import delete_project
 # Ensure the correct version of chromedriver is installed
 chromedriver_autoinstaller.install()
 
+ROOT_PROJECTS_DIR_VALUE = "/tmp/standards-lab-test"
 
-@override_settings(ROOT_PROJECTS_DIR="/tmp/standards-lab-test", DEBUG=True)
+
+@override_settings(ROOT_PROJECTS_DIR=ROOT_PROJECTS_DIR_VALUE, DEBUG=True)
 class BrowserTests(StaticLiveServerTestCase):
     """Browser test using latest Chrome/Chromium stable"""
 
     def __init__(self, *args, **kwargs):
-        os.makedirs("/tmp/standards-lab-test", exist_ok=True)
+        os.makedirs(ROOT_PROJECTS_DIR_VALUE, exist_ok=True)
         super(BrowserTests, self).__init__(*args, **kwargs)
 
     def setUp(self, *args, **kwargs):
@@ -28,6 +30,8 @@ class BrowserTests(StaticLiveServerTestCase):
 
         chrome_options = Options()
         chrome_options.add_argument("--headless")
+        #  no-sandbox prevents an error when running as the root user
+        chrome_options.add_argument("--no-sandbox")
 
         self.driver = webdriver.Chrome(
             service_args=["--verbose", "--log-path=selenium.log"],
@@ -40,7 +44,7 @@ class BrowserTests(StaticLiveServerTestCase):
         self.driver.quit()
 
         # remove projects from temporary folder.
-        for project in os.listdir("/tmp/standards-lab-test"):
+        for project in os.listdir(ROOT_PROJECTS_DIR_VALUE):
             delete_project(project) if project else None
 
     def get(self, url):

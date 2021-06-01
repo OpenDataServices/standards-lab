@@ -22,4 +22,18 @@ You'll need to rebuild the docker environment if you [add, remove, or upgrade th
 
 If you edit Python code the changes should be reloaded automatically.
 
-Read about [how to run the tests locally with docker](tests.md).
+## Running tests
+
+To run the tests with docker-compose locally:
+
+```bash
+$ docker-compose  -f docker-compose.test.yml up
+```
+
+As before, you'll need to rebuild the docker environment if you [add, remove, or upgrade the dependencies](dependencies.md):
+
+```bash
+$ docker-compose  -f docker-compose.test.yml down
+$ docker-compose  -f docker-compose.test.yml build --no-cache
+$ docker-compose  -f docker-compose.test.yml up
+```
