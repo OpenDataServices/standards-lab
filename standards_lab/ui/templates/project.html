@@ -20,7 +20,71 @@
 <div class="container">
   <h1 class="text-right mt-3 mb-4">Open Standards Lab<span v-if="project.name">: {{project.name}}</span></h1>
 
-  <div class="card mb-3">
+  <div>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabWelcome">Welcome</a>
+        <a class="nav-link" href="#" v-else  v-on:click="selectTabWelcome">Welcome</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabSchema">Schema</a>
+        <a class="nav-link" href="#" v-else  v-on:click="selectTabSchema">Schema</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabData">Data</a>
+        <a class="nav-link" href="#" v-else  v-on:click="selectTabData">Data</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabTest">Test</a>
+        <a class="nav-link" href="#" v-else v-on:click="selectTabTest">Test</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#" v-if="currentTabSettings">Settings</a>
+        <a class="nav-link" href="#" v-else v-on:click="selectTabSettings">Settings</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card mb-3" v-show="currentTabWelcome">
+    <div class="card-body">
+      <h2 class="card-title">Welcome to Project {{ project.name }}</h2>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>JSON schema files define your standard. </p>
+          <p v-if="project.schemaFiles.length == 0">This project currently has no schema files - you must add some.</p>
+          <p v-else-if="project.schemaFiles.length == 1">This project has 1 schema file.</p>
+          <p v-else>This project has {{ project.schemaFiles.length }} schema files.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabSchema">View and edit schemas</button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>Upload and edit sample data in multiple formats.</p>
+          <p v-if="project.dataFiles.length == 0">This project currently has no data files - you must add some.</p>
+          <p v-else-if="project.dataFiles.length == 1">This project has 1 data file.</p>
+          <p v-else>This project has {{ project.dataFiles.length }} data files.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabData">View and edit data</button>
+          </div>
+        </div>
+      </div>
+      <div class="card mb-3">
+        <div class="card-body">
+          <p>We will test your data files against your JSON Schema files and tell you about any errors. This will help you design the perfect data standard!</p>
+          <p v-if="project.schemaFiles.length == 0 && project.dataFiles.length == 0">You must add a schema and data file before trying this.</p>
+          <p v-else-if="project.schemaFiles.length == 0">You must add a schema file before trying this.</p>
+          <p v-else-if="project.dataFiles.length == 0">You must add a data file before trying this.</p>
+          <div class="text-right">
+            <button type="button" class="btn btn-primary" v-on:click="selectTabTest">Run tests and view results</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3" v-show="currentTabSettings">
     <div class="card-body">
       <h2 class="card-title">Project Settings</h2>
       <p>Settings affect the way in which the data and schema being developed interact. <a href="https://standards-lab.readthedocs.io/en/latest/user/project.html#project-settings" target="_blank"><i>Project Settings documentation.</i></a></p>
@@ -48,7 +112,7 @@
     </div>
   </div>
 
-  <div class="card mb-3" v-bind:class="{ maximise: maximiseSchemaEditor }">
+  <div class="card mb-3" v-bind:class="{ maximise: maximiseSchemaEditor }"  v-show="currentTabSchema">
     <button v-on:click="maximiseSchemaEditor = !maximiseSchemaEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
       <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
     </button>
@@ -104,7 +168,7 @@
     </div>
   </div>
 
-  <div class="card mb-3" v-bind:class="{ maximise: maximiseDataEditor }">
+  <div class="card mb-3" v-bind:class="{ maximise: maximiseDataEditor }"   v-show="currentTabData">
     <button v-on:click="maximiseDataEditor = !maximiseDataEditor" class="btn btn-outline-light btn-sm" style="position: absolute; right: 0" title="Maximise">
       <svg t="1523765571855" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1927" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16"><path d="M63.989383 105.442494l0 268.396843c0 18.935258 15.368012 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L132.597971 180.156126l218.107483 218.176045c12.82919 12.830213 33.618679 12.830213 46.515407 0 12.830213-12.897751 12.830213-33.686217 0-46.51643l-218.176045-218.107483 193.683211 0c18.935258 0 34.304294-15.369036 34.304294-34.304294 0-18.935258-15.369036-34.304294-34.304294-34.304294L104.331183 65.09967C79.288834 65.09967 63.989383 77.999468 63.989383 105.442494L63.989383 105.442494z" p-id="1928" fill="#000000"></path><path d="M917.688719 65.09967 649.290853 65.09967c-18.935258 0-34.304294 15.369036-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l193.683211 0-218.176045 218.107483c-12.830213 12.82919-12.830213 33.618679 0 46.51643 12.897751 12.830213 33.686217 12.830213 46.515407 0L889.420909 180.156126l0 193.683211c0 18.935258 15.369036 34.304294 34.304294 34.304294 18.936281 0 34.304294-15.369036 34.304294-34.304294L958.029496 105.442494C958.029496 77.999468 942.79963 65.09967 917.688719 65.09967L917.688719 65.09967z" p-id="1929" fill="#000000"></path><path d="M104.331183 957.013353l268.397866 0c18.935258 0 34.304294-15.368012 34.304294-34.304294 0-18.936281-15.369036-34.304294-34.304294-34.304294L179.045839 888.404766l218.176045-218.107483c12.830213-12.82919 12.830213-33.618679 0-46.515407-12.897751-12.830213-33.686217-12.830213-46.515407 0l-218.107483 218.176045L132.598994 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.936281 0-34.304294 15.369036-34.304294 34.304294l0 268.397866C63.989383 944.115602 79.288834 957.013353 104.331183 957.013353L104.331183 957.013353z" p-id="1930" fill="#000000"></path><path d="M958.029496 916.671553 958.029496 648.27471c0-18.935258-15.368012-34.304294-34.304294-34.304294-18.935258 0-34.304294 15.369036-34.304294 34.304294l0 193.683211L671.313425 623.781876c-12.82919-12.830213-33.618679-12.830213-46.515407 0-12.830213 12.897751-12.830213 33.686217 0 46.515407l218.176045 218.107483L649.290853 888.404766c-18.935258 0-34.304294 15.368012-34.304294 34.304294 0 18.936281 15.369036 34.304294 34.304294 34.304294l268.397866 0C942.79963 957.013353 958.029496 944.115602 958.029496 916.671553L958.029496 916.671553z" p-id="1931" fill="#000000"></path></svg>
     </button>
@@ -157,7 +221,7 @@
 
   </div>
 
-  <div class="card mb-3">
+  <div class="card mb-3"   v-show="currentTabTest">
     <div class="card-body">
       <h2 class="card-title">Test</h2>
       <p>Test the project data with the configuration and schema. <a href="https://standards-lab.readthedocs.io/en/latest/user/project.html#test" target="_blank"><i>Project Test documentation.</i></a></p>
@@ -243,6 +307,12 @@
 
         testResults: false,
         testResultsPollerTimer: undefined,
+
+        currentTabWelcome: true,
+        currentTabSchema: false,
+        currentTabData: false,
+        currentTabTest: false,
+        currentTabSettings: false,
       }
     },
 
@@ -518,6 +588,47 @@
           }, 2000);
       }
     },
+
+    selectTabWelcome: function() {
+      this.currentTabWelcome = true;
+      this.currentTabSchema = false;
+      this.currentTabData = false;
+      this.currentTabTest = false;
+      this.currentTabSettings = false;
+    },
+
+    selectTabSchema: function() {
+      this.currentTabWelcome = false;
+      this.currentTabSchema = true;
+      this.currentTabData = false;
+      this.currentTabTest = false;
+      this.currentTabSettings = false;
+    },
+
+    selectTabData: function() {
+      this.currentTabWelcome = false;
+      this.currentTabSchema = false;
+      this.currentTabData = true;
+      this.currentTabTest = false;
+      this.currentTabSettings = false;
+    },
+
+    selectTabTest: function() {
+      this.currentTabWelcome = false;
+      this.currentTabSchema = false;
+      this.currentTabData = false;
+      this.currentTabTest = true;
+      this.currentTabSettings = false;
+    },
+
+    selectTabSettings: function() {
+      this.currentTabWelcome = false;
+      this.currentTabSchema = false;
+      this.currentTabData = false;
+      this.currentTabTest = false;
+      this.currentTabSettings = true;
+    },
+
 
   } /* end methods */
 

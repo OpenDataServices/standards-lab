@@ -38,7 +38,7 @@ def create_new_project(project_name, json_format=False):
 
     os.makedirs(path)
 
-    project = {"name": project_name, "path": path}
+    project = {"name": project_name, "path": path, "schemaFiles": [], "dataFiles": []}
 
     with open(
         os.path.join(settings.ROOT_PROJECTS_DIR, project_name, "settings.json"),
