@@ -90,7 +90,7 @@ libcove==0.20.2
     # via
     #   -r requirements.in
     #   libcoveweb
-lxml==4.6.3
+lxml==4.9.1
     # via flattentool
 mccabe==0.6.1
     # via flake8
@@ -148,7 +148,7 @@ six==1.16.0
     # via
     #   jsonschema
     #   zodb
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 strict-rfc3339==0.7
     # via libcove
@@ -160,7 +160,7 @@ transaction==3.0.1
     # via zodb
 uc-rfc6266-parser==0.1.0
     # via libcoveweb
-urllib3==1.26.4
+urllib3==1.26.10
     # via
     #   requests
     #   selenium
