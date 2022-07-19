@@ -6,6 +6,8 @@
 #
 -e git+https://github.com/OpenDataServices/lib-cove-web.git@main#egg=libcoveweb
     # via -r requirements.in
+asgiref==3.5.2
+    # via django
 attrs==21.1.0
     # via jsonschema
 backports-datetime-fromisoformat==1.0.0
@@ -32,7 +34,7 @@ contextlib2==0.6.0.post1
     # via schema
 defusedxml==0.7.1
     # via odfpy
-django==2.2.22
+django==3.2.14
     # via
     #   -r requirements.in
     #   django-bootstrap3
