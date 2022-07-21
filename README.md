@@ -13,8 +13,8 @@ Installing standards lab to develop the standards-lab code
 # Install system dependencies
 $ apt install redis python3-virtualenv # or whatever you system package manger uses
 
-# Create python virtual environment
-$ virtualenv --python python3 .ve
+# Create python virtual environment (Python 3.9 to match Docker images)
+$ virtualenv --python python3.9 .ve
 
 # Activate python virtual environment
 $ source ./.ve/bin/activate
@@ -49,8 +49,8 @@ Install Docker and Docker Compose.
 Then
 
 ```
-docker-compose build
-docker-compose up
+docker-compose  -f docker-compose.yml -f docker-compose.override.dev.yml build
+docker-compose  -f docker-compose.yml -f docker-compose.override.dev.yml up
 ```
 
 Visit `localhost:8000` in a browser.
