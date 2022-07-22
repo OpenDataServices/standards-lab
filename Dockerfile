@@ -1,4 +1,4 @@
-FROM python:3.9.1-buster
+FROM python:3.9.13-buster
 RUN mkdir /code
 WORKDIR /
 COPY requirements_dev.txt /code/

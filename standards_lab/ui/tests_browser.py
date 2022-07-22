@@ -1,4 +1,5 @@
 import os
+import time
 
 import chromedriver_autoinstaller
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -155,6 +156,9 @@ class BrowserTests(StaticLiveServerTestCase):
         schema_upload.send_keys(
             os.path.join(os.path.dirname(__file__), "fixtures", "test_schema.json")
         )
+
+        time.sleep(1)
+
         schema_files = self.driver.find_element_by_id("current-schema-files").text
 
         self.assertIn("test_schema.json", schema_files)
@@ -166,6 +170,8 @@ class BrowserTests(StaticLiveServerTestCase):
 
         # by default it is "schema.json"
         self.assertEqual("schema.json", file_open)
+
+        time.sleep(1)
 
         # click on schema file
         self.driver.find_element_by_xpath(
@@ -182,6 +188,8 @@ class BrowserTests(StaticLiveServerTestCase):
 
         self.assertIn("empty object", json_tree)
 
+        time.sleep(1)
+
         # click on schema file
         self.driver.find_element_by_xpath(
             "//button[@title='Open test_schema.json']"
@@ -194,6 +202,8 @@ class BrowserTests(StaticLiveServerTestCase):
         """Check that saving the schema file doesn't break anything."""
 
         self.upload_schema_file("new_project_foo", "test_schema.json")
+
+        time.sleep(1)
 
         # click on schema file
         self.driver.find_element_by_xpath(
@@ -208,6 +218,8 @@ class BrowserTests(StaticLiveServerTestCase):
             "new_project_foo", "test_data.json"
         )
 
+        time.sleep(1)
+
         data_files = self.driver.find_element_by_id("current-data-files").text
 
         self.assertIn("test_data.json", data_files)
@@ -221,6 +233,8 @@ class BrowserTests(StaticLiveServerTestCase):
 
         # by default it is "untitled.json"
         self.assertEqual("untitled.json", file_open)
+
+        time.sleep(1)
 
         # click on data file
         self.driver.find_element_by_xpath(
@@ -240,6 +254,8 @@ class BrowserTests(StaticLiveServerTestCase):
         ).text
 
         self.assertNotIn("grants", json_editor)
+
+        time.sleep(1)
 
         # click on data file
         self.driver.find_element_by_xpath(
