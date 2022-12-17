@@ -1,6 +1,6 @@
 -e git+https://github.com/OpenDataServices/lib-cove-web.git@main#egg=libcoveweb
 django==3.2.*
-libcove==0.20.2
+libcove
 django-rq==2.4.0
 pip-tools
 django-environ
