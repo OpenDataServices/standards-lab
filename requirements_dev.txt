@@ -32,10 +32,12 @@ cached-property==1.5.2
 certifi==2022.12.7
     # via
     #   requests
-    #   selenium
     #   sentry-sdk
+    #   urllib3
 cffi==1.15.1
-    # via persistent
+    # via
+    #   cryptography
+    #   persistent
 charset-normalizer==2.1.1
     # via requests
 chromedriver-autoinstaller==0.4.0
@@ -51,6 +53,10 @@ coverage==6.5.0
     # via coveralls
 coveralls==3.3.1
     # via -r requirements_dev.in
+cryptography==38.0.4
+    # via
+    #   pyopenssl
+    #   urllib3
 defusedxml==0.7.1
     # via odfpy
 django==3.2.16
@@ -90,6 +96,7 @@ idna==3.4
     # via
     #   requests
     #   trio
+    #   urllib3
 ijson==3.1.4
     # via flattentool
 jsonref==1.0.1
@@ -134,6 +141,8 @@ pycparser==2.21
     # via cffi
 pyflakes==3.0.1
     # via flake8
+pyopenssl==22.1.0
+    # via urllib3
 pyrsistent==0.19.2
     # via jsonschema
 pysocks==1.7.1
@@ -160,7 +169,7 @@ rq==1.11.1
     # via django-rq
 schema==0.7.5
     # via flattentool
-selenium==4.7.2
+selenium==4.2.0
     # via -r requirements_dev.in
 sentry-sdk==1.12.0
     # via -r requirements.in
@@ -192,11 +201,13 @@ typing-extensions==4.4.0
     # via black
 uc-rfc6266-parser==0.1.0
     # via libcoveweb
-urllib3[socks]==1.26.13
+urllib3[secure,socks]==1.26.13
     # via
     #   requests
     #   selenium
     #   sentry-sdk
+urllib3-secure-extra==0.1.0
+    # via urllib3
 werkzeug==1.0.1
     # via uc-rfc6266-parser
 wheel==0.38.4
