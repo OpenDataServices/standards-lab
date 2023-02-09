@@ -1,0 +1,22 @@
+{
+  "formation": {
+    "web": {
+      "quantity": 1
+    },
+    "worker": {
+      "quantity": 1
+    }
+  },
+  "dokkusd": {
+    "services": [
+      "redis"
+    ],
+    "volumes": [
+      {
+        "host_subdir": "projects_dir",
+        "container_path": "/projects_dir"
+      }
+    ],
+    "keep_git_dir": true
+  }
+}
