@@ -1,6 +1,10 @@
 -r requirements.in
 black
 flake8
-selenium
+# Selenium 4.3.0 changes the API, so install a version before that.
+# We did the same thing for cove:
+# https://github.com/ThreeSixtyGiving/dataquality/commit/bfbc1cbab2b40368ab2c37472fc2e02d5d833b97
+# https://github.com/OpenDataServices/cove/commit/8895bd76a127fd09ebb0435a73ddb4e9f8da589a
+selenium<4.3.0
 coveralls
 chromedriver-autoinstaller
